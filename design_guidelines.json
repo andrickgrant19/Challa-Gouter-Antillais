@@ -1,0 +1,98 @@
+{
+  "theme": "light",
+  "archetype": "1_organic_earthy_luxury",
+  "design_philosophy": "Premium Caribbean dining. Let the vibrant food and elegant interior imagery shine against a warm Cream White background. Use Black for sharp typographic contrast, Deep Orange for appetite-inducing CTAs, Tropical Green for lush structural accents, and Gold for high-end borders/highlights.",
+  "colors": {
+    "background_primary": "#FAF8F5",
+    "background_secondary": "#F3EFE6",
+    "text_primary": "#111111",
+    "text_secondary": "#4A4A4A",
+    "brand_orange": "#D84315",
+    "brand_green": "#1B5E20",
+    "brand_gold": "#D4AF37",
+    "surface": "#FFFFFF",
+    "border": "#E8E1D5"
+  },
+  "typography": {
+    "heading_font": "Cormorant Garamond",
+    "body_font": "Outfit",
+    "scale": {
+      "h1": "text-5xl md:text-6xl tracking-tight leading-none",
+      "h2": "text-4xl md:text-5xl tracking-tight leading-tight",
+      "h3": "text-2xl md:text-3xl leading-snug",
+      "body": "text-base md:text-lg leading-relaxed text-[#4A4A4A]",
+      "overline": "text-xs tracking-[0.2em] uppercase font-semibold text-[#D4AF37]"
+    },
+    "guidelines": "Do not center align everything. Use left alignment for body copy to enhance reading rhythm. Headings should be sophisticated, not chunky."
+  },
+  "layout": {
+    "spacing": "Use p-8 to p-16 for internal containers. Section gaps should be massive (py-24 or py-32) to give the layout breathing room.",
+    "grid": "Bento-style grids for the 'Popular Dishes' and 'Menu Highlights'. Mix col-span-2 and col-span-1 to create an asymmetrical, editorial gallery feel.",
+    "hero_overlay": "Use a subtle gradient overlay (bg-gradient-to-r from-black/60 via-black/30 to-transparent) over the hero image so the white text and gold accents remain legible without muddying the image."
+  },
+  "components": {
+    "header": "Crystal Glassmorphism (backdrop-blur-xl bg-[#FAF8F5]/85). Include a subtle 1px bottom border in gold/green tint (border-[#D4AF37]/30). Sticky positioned.",
+    "buttons": {
+      "primary": "Solid Deep Orange (bg-[#D84315]) with white text. Hover state slightly darker (#BF360C) with a subtle lift (-translate-y-0.5).",
+      "secondary": "Transparent with 1px solid border in Gold (#D4AF37) or Green (#1B5E20), colored text. Hover state fills the background with a 5% opacity tint.",
+      "rules": "Buttons should have moderate border radius (rounded-md). Always set text color on hover."
+    },
+    "cards": "Avoid default Shadcn card borders. Use flat, borderless layouts with high-quality images. Use a subtle shadow-sm only on hover.",
+    "images": "All standard images should have rounded-xl or rounded-2xl to feel organic, except edge-to-edge banners."
+  },
+  "motion": {
+    "entrance": "Staggered fade-up for bento grid items and menu lists.",
+    "scroll": "Smooth momentum scrolling via Lenis. Subtle parallax on background imagery."
+  },
+  "media": {
+    "hero": [
+      {
+        "url": "https://images.pexels.com/photos/12688961/pexels-photo-12688961.jpeg",
+        "category": "hero_background",
+        "description": "Elegant warm restaurant interior for the main hero background."
+      }
+    ],
+    "food_showcase": [
+      {
+        "url": "https://images.pexels.com/photos/27556985/pexels-photo-27556985.jpeg",
+        "category": "popular_dish_1",
+        "description": "Jerk chicken with plantains and rice."
+      },
+      {
+        "url": "https://images.pexels.com/photos/27556971/pexels-photo-27556971.jpeg",
+        "category": "popular_dish_2",
+        "description": "Crispy fried plantains closeup."
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1702827495860-dc51777385a4",
+        "category": "popular_dish_3",
+        "description": "Gourmet platter on wood."
+      }
+    ],
+    "about_catering": [
+      {
+        "url": "https://images.pexels.com/photos/32568165/pexels-photo-32568165.jpeg",
+        "category": "catering_events",
+        "description": "Warm lit tropical foliage dining setup for catering/events section."
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1772479036537-2f24be392ab0",
+        "category": "about_interior",
+        "description": "Tropical fine dining interior with plants."
+      }
+    ]
+  },
+  "instructions_to_main_agent": [
+    "Strictly follow the color palette provided. DO NOT use generic blue or purple. The entire vibe is Cream, Black, Orange, Green, and Gold.",
+    "Implement a clear bilingual Language Switcher (FR/EN) in the Header.",
+    "Use standard HTML/Tailwind for the landing page layout to achieve the asymmetrical, editorial look.",
+    "Use Shadcn UI for interactive forms (Contact Form, Reservations/Ordering Modals) but strip their default borders to match the premium theme.",
+    "Hero section must include multiple CTAs: 'Order Online', 'View Menu', 'Call Now'.",
+    "Include a Click-to-Call floating/fixed action button for mobile viewports.",
+    "Use 'lucide-react' for all icons (e.g., Phone, MapPin, Star).",
+    "All interactive elements MUST have role-based data-testid attributes (e.g., data-testid='lang-switcher', data-testid='cta-order-hero').",
+    "Do NOT use placeholder images. Use the exact URLs provided in the media section.",
+    "Ensure high contrast on all text overlays; use text-shadow or gradient scrims if necessary.",
+    "Ensure mobile-first responsiveness across all bento grids and typography scaling."
+  ]
+}
