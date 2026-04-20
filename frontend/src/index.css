@@ -21,6 +21,9 @@ h1, h2, h3, h4, h5 {
   font-family: 'Cormorant Garamond', Georgia, serif;
 }
 
+/* Hide Emergent badge */
+#emergent-badge { display: none !important; }
+
 /* Custom scrollbar */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: #FAF8F5; }
