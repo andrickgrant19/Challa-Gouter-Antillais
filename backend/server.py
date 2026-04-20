@@ -71,7 +71,19 @@ async def submit_contact(data: ContactMessage):
 @api_router.get("/contact", response_model=List[ContactResponse])
 async def get_messages():
     messages = await db.contact_messages.find({}, {"_id": 0}).to_list(100)
-    return [ContactResponse(id="", **{k: v for k, v in m.items() if k in ContactResponse.model_fields}) for m in messages]
+    result = []
+    for m in messages:
+        try:
+            result.append(ContactResponse(
+                id=str(m.get("_id", "")),
+                name=m.get("name", ""),
+                email=m.get("email", ""),
+                subject=m.get("subject", ""),
+                created_at=m.get("created_at", ""),
+            ))
+        except Exception:
+            continue
+    return result
 
 @api_router.get("/health")
 async def health():
