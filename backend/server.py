@@ -2,11 +2,10 @@ from fastapi import FastAPI, APIRouter, HTTPException, Request, Header
 from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
-from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
 from pathlib import Path
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone
 import httpx
@@ -14,10 +13,6 @@ import stripe
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
-
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
 
 SUPABASE_URL = os.environ.get("SUPABASE_URL", "").rstrip("/")
 SUPABASE_SERVICE_ROLE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
@@ -139,44 +134,40 @@ async def health():
 
 @api_router.post("/contact", response_model=ContactResponse)
 async def submit_contact(data: ContactMessage):
-    try:
-        doc = {
-            "name": data.name,
-            "email": data.email,
-            "phone": data.phone or "",
-            "subject": data.subject,
-            "message": data.message,
-            "created_at": datetime.now(timezone.utc).isoformat(),
-        }
-        result = await db.contact_messages.insert_one(doc)
-        logger.info(f"Contact from {data.name} ({data.email}): {data.subject}")
-        return ContactResponse(
-            id=str(result.inserted_id),
-            name=data.name,
-            email=data.email,
-            subject=data.subject,
-            created_at=doc["created_at"],
-        )
-    except Exception as e:
-        logger.error(f"Contact form error: {e}")
-        raise HTTPException(status_code=500, detail="Failed to save message")
+    payload = {
+        "name": data.name,
+        "email": data.email,
+        "phone": data.phone or None,
+        "subject": data.subject,
+        "message": data.message,
+    }
+    row = await sb_insert("contact_messages", payload)
+    logger.info(f"Contact from {data.name} ({data.email}): {data.subject}")
+    return ContactResponse(
+        id=str(row["id"]),
+        name=row["name"],
+        email=row["email"],
+        subject=row["subject"],
+        created_at=row["created_at"],
+    )
 
 @api_router.get("/contact", response_model=List[ContactResponse])
 async def get_messages():
-    messages = await db.contact_messages.find({}, {"_id": 0}).to_list(100)
-    result = []
-    for m in messages:
+    rows = await sb_get("contact_messages")
+    rows.sort(key=lambda r: r.get("created_at", ""), reverse=True)
+    out: List[ContactResponse] = []
+    for r in rows[:200]:
         try:
-            result.append(ContactResponse(
-                id=str(m.get("_id", "")),
-                name=m.get("name", ""),
-                email=m.get("email", ""),
-                subject=m.get("subject", ""),
-                created_at=m.get("created_at", ""),
+            out.append(ContactResponse(
+                id=str(r.get("id", "")),
+                name=r.get("name", ""),
+                email=r.get("email", ""),
+                subject=r.get("subject", ""),
+                created_at=r.get("created_at", ""),
             ))
         except Exception:
             continue
-    return result
+    return out
 
 # ─── Checkout / Stripe ────────────────────────────────────────────────────────
 
@@ -306,7 +297,3 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-@app.on_event("shutdown")
-async def shutdown_db_client():
-    client.close()

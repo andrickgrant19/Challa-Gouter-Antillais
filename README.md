@@ -13,7 +13,7 @@ Premium bilingual (FR / EN) restaurant website + lightweight e-commerce stack fo
 |------|------|
 | Frontend | React 19, React Router 7, Tailwind CSS 3, Shadcn/UI, lucide-react |
 | Backend  | FastAPI, httpx, Stripe SDK, Motor (MongoDB), python-dotenv |
-| Database | **Supabase** (Postgres + Realtime + Auth) for orders & menu_items, **MongoDB** for contact messages |
+| Database | **Supabase** (Postgres + Realtime + Auth) — single database for orders, menu_items, contact_messages |
 | Payments | Stripe Hosted Checkout + webhook |
 | Hosting  | Designed for Emergent / any Node + Python host |
 
@@ -49,7 +49,7 @@ Premium bilingual (FR / EN) restaurant website + lightweight e-commerce stack fo
 │   │       ├── Home.jsx, Menu.jsx, About.jsx, Catering.jsx, Reviews.jsx, Contact.jsx
 │   │       ├── Checkout.jsx, OrderConfirmation.jsx
 │   │       ├── Login.jsx
-│   │       └── Dashboard.jsx, DashboardOrders.jsx, DashboardMenu.jsx, DashboardHistory.jsx
+│   │       └── Dashboard.jsx, DashboardOrders.jsx, DashboardMenu.jsx, DashboardMessages.jsx, DashboardHistory.jsx
 │   └── .env.example
 ├── supabase_migrations.sql        # Idempotent schema for orders + menu_items + Realtime
 └── README.md
@@ -77,6 +77,7 @@ Premium bilingual (FR / EN) restaurant website + lightweight e-commerce stack fo
 | `/login` | Email + password (Supabase) |
 | `/dashboard` | Live orders (Realtime + audio ping) |
 | `/dashboard/menu` | Menu CRUD |
+| `/dashboard/messages` | Contact form & catering inquiries (realtime) |
 | `/dashboard/history` | Last 200 orders, status filters |
 
 ---
@@ -86,7 +87,7 @@ Premium bilingual (FR / EN) restaurant website + lightweight e-commerce stack fo
 | Method | Path | Purpose |
 |--------|------|---------|
 | GET    | `/api/health` | Health + feature flags (`supabase_configured`, `stripe_configured`) |
-| POST   | `/api/contact` | Save contact form message (MongoDB) |
+| POST   | `/api/contact` | Save contact form message (Supabase) |
 | GET    | `/api/contact` | List messages (admin) |
 | POST   | `/api/checkout/create-session` | Save order → Supabase, optionally create Stripe Session |
 | POST   | `/api/webhooks/stripe` | Handle `checkout.session.completed` → flip status to `in_progress` |
@@ -109,8 +110,7 @@ REACT_APP_STRIPE_PUBLISHABLE_KEY=
 
 ### `backend/.env`
 ```
-MONGO_URL=
-DB_NAME=
+CORS_ORIGINS=
 SUPABASE_URL=
 SUPABASE_SERVICE_ROLE_KEY=
 STRIPE_SECRET_KEY=
@@ -181,6 +181,7 @@ The frontend talks to the backend through `REACT_APP_BACKEND_URL` (all API route
   `new → in_progress → completed` (or cancelled)
 - Sub-tabs:
   - **Menu** — full CRUD on `menu_items`. Items here override the static fallback menu.
+  - **Messages** — contact-form inquiries with realtime updates, search, read/unread tracking.
   - **History** — last 200 orders with status filters.
 
 ---
