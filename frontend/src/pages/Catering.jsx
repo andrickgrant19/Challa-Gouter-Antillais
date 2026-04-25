@@ -1,11 +1,16 @@
-import { useState } from "react";
-import { PartyPopper, Building2, Heart, Users, Phone, Check, ArrowRight } from "lucide-react";
+import { useState, useEffect } from "react";
+import { PartyPopper, Building2, Heart, Users, Phone, Check, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { useLanguage } from "../context/LanguageContext";
 import translations from "../translations";
 import { useScrollRevealAll } from "../hooks/useScrollReveal";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const EVENT_ICONS = [PartyPopper, Building2, Heart, Users];
+
+const CATERING_SLIDES = [
+  "https://customer-assets.emergentagent.com/job_antilles-kitchen/artifacts/wxezotrm_unnamed-4.jpg",
+  "https://customer-assets.emergentagent.com/job_antilles-kitchen/artifacts/3mzh6rc0_unnamed-3.jpg",
+];
 
 export default function Catering() {
   const { lang } = useLanguage();
@@ -51,6 +56,9 @@ export default function Catering() {
           <h1 data-testid="catering-title" className="font-heading text-5xl md:text-6xl font-bold text-white whitespace-pre-line leading-tight">{C.hero.title}</h1>
         </div>
       </section>
+
+      {/* Catering Slideshow */}
+      <CateringSlideshow />
 
       {/* Intro */}
       <section className="py-24 lg:py-32">
@@ -175,5 +183,73 @@ export default function Catering() {
         </div>
       </section>
     </main>
+  );
+}
+
+function CateringSlideshow() {
+  const [index, setIndex] = useState(0);
+  const total = CATERING_SLIDES.length;
+
+  useEffect(() => {
+    const t = setInterval(() => setIndex((i) => (i + 1) % total), 4000);
+    return () => clearInterval(t);
+  }, [total]);
+
+  const goPrev = () => setIndex((i) => (i - 1 + total) % total);
+  const goNext = () => setIndex((i) => (i + 1) % total);
+
+  return (
+    <section
+      data-testid="catering-slideshow"
+      className="relative w-full overflow-hidden h-[280px] md:h-[500px] bg-brand-black"
+    >
+      {/* Slides (cross-fade) */}
+      {CATERING_SLIDES.map((src, i) => (
+        <img
+          key={src}
+          src={src}
+          alt={`Catering ${i + 1}`}
+          loading={i === 0 ? "eager" : "lazy"}
+          className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-1000 ease-in-out ${
+            i === index ? "opacity-100" : "opacity-0"
+          }`}
+        />
+      ))}
+
+      {/* Arrows */}
+      <button
+        onClick={goPrev}
+        aria-label="Previous slide"
+        data-testid="catering-slide-prev"
+        className="absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/85 hover:bg-white text-brand-black flex items-center justify-center shadow-[0_4px_14px_rgba(0,0,0,0.35)] backdrop-blur-sm transition-all hover:scale-105 active:scale-95"
+      >
+        <ChevronLeft size={20} />
+      </button>
+      <button
+        onClick={goNext}
+        aria-label="Next slide"
+        data-testid="catering-slide-next"
+        className="absolute right-3 sm:right-5 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/85 hover:bg-white text-brand-black flex items-center justify-center shadow-[0_4px_14px_rgba(0,0,0,0.35)] backdrop-blur-sm transition-all hover:scale-105 active:scale-95"
+      >
+        <ChevronRight size={20} />
+      </button>
+
+      {/* Dots */}
+      <div className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2.5">
+        {CATERING_SLIDES.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setIndex(i)}
+            aria-label={`Go to slide ${i + 1}`}
+            data-testid={`catering-slide-dot-${i}`}
+            className={`rounded-full transition-all duration-300 shadow-[0_2px_8px_rgba(0,0,0,0.4)] ${
+              i === index
+                ? "bg-white w-7 h-2.5"
+                : "bg-transparent border-2 border-white/90 w-2.5 h-2.5 hover:bg-white/40"
+            }`}
+          />
+        ))}
+      </div>
+    </section>
   );
 }
