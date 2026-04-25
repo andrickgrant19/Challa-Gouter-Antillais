@@ -1,6 +1,7 @@
 -- =============================================
 -- Chala Le Gouter Antillais - Supabase Schema
 -- Run this in Supabase Dashboard → SQL Editor
+-- This script is idempotent: safe to run multiple times.
 -- =============================================
 
 -- Orders table
@@ -20,6 +21,10 @@ CREATE TABLE IF NOT EXISTS orders (
   stripe_session_id text
 );
 
+-- Patch existing tables that pre-date the stripe_session_id column
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS stripe_session_id text;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS stripe_payment_intent_id text;
+
 -- Menu items table
 CREATE TABLE IF NOT EXISTS menu_items (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -33,22 +38,31 @@ CREATE TABLE IF NOT EXISTS menu_items (
   display_order integer NOT NULL DEFAULT 0
 );
 
--- Enable Row Level Security (optional for production)
--- ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
--- ALTER TABLE menu_items ENABLE ROW LEVEL SECURITY;
-
--- For MVP: Allow all operations (enable RLS + policies for production)
--- CREATE POLICY "Allow all on orders" ON orders FOR ALL USING (true) WITH CHECK (true);
--- CREATE POLICY "Allow all on menu_items" ON menu_items FOR ALL USING (true) WITH CHECK (true);
-
--- Enable Realtime on orders
--- Run in Dashboard → Database → Replication → Enable realtime for "orders" table
--- OR run this SQL:
+-- Realtime: ensure orders changes broadcast full row
 ALTER TABLE orders REPLICA IDENTITY FULL;
 
--- Index for faster queries
+-- Enable Realtime on the orders table (Supabase needs this in publication)
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_publication_tables
+    WHERE pubname = 'supabase_realtime' AND tablename = 'orders'
+  ) THEN
+    EXECUTE 'ALTER PUBLICATION supabase_realtime ADD TABLE orders';
+  END IF;
+END$$;
+
+-- Indexes
 CREATE INDEX IF NOT EXISTS orders_status_idx ON orders(status);
 CREATE INDEX IF NOT EXISTS orders_created_at_idx ON orders(created_at DESC);
 CREATE INDEX IF NOT EXISTS orders_stripe_session_id_idx ON orders(stripe_session_id);
 CREATE INDEX IF NOT EXISTS menu_items_category_idx ON menu_items(category);
 CREATE INDEX IF NOT EXISTS menu_items_available_idx ON menu_items(is_available);
+
+-- =============================================
+-- RLS NOTE for production (currently disabled for MVP)
+-- =============================================
+-- ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
+-- ALTER TABLE menu_items ENABLE ROW LEVEL SECURITY;
+-- CREATE POLICY "anyone can view available menu" ON menu_items FOR SELECT USING (is_available = true);
+-- CREATE POLICY "auth can manage orders" ON orders FOR ALL USING (auth.role() = 'authenticated');

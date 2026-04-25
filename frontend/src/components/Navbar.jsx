@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Phone } from "lucide-react";
+import { Menu, X, Phone, ShoppingBag } from "lucide-react";
 import { useLanguage } from "../context/LanguageContext";
+import { useCart } from "../context/CartContext";
+import { restaurantConfig } from "../restaurant.config";
 import translations from "../translations";
 
 export default function Navbar() {
+  const { totalItems, openDrawer } = useCart();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const { lang, switchLang } = useLanguage();
@@ -94,8 +97,21 @@ export default function Navbar() {
                   EN
                 </button>
               </div>
+              <button
+                onClick={openDrawer}
+                data-testid="navbar-cart-btn"
+                className={`relative p-2 rounded-md transition-colors ${scrolled || mobileOpen ? "text-brand-black hover:text-brand-orange hover:bg-brand-cream" : "text-white/90 hover:text-white"}`}
+                aria-label="Open cart"
+              >
+                <ShoppingBag size={18} />
+                {totalItems > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-brand-orange text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center leading-none">
+                    {totalItems}
+                  </span>
+                )}
+              </button>
               <a
-                href="https://www.ubereats.com/ca-fr/store/chala-le-gouter-antillais/5PogqSjLWTKTUIYfVPvYPw"
+                href={restaurantConfig.uberEatsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 data-testid="cta-order-nav"
@@ -105,12 +121,25 @@ export default function Navbar() {
               </a>
             </div>
 
-            {/* Mobile: Lang switcher + hamburger */}
+            {/* Mobile: Lang switcher + cart + hamburger */}
             <div className="flex lg:hidden items-center gap-2">
               <div data-testid="lang-switcher-mobile" className="flex items-center border border-brand-gold/40 rounded overflow-hidden">
                 <button onClick={() => switchLang("fr")} data-testid="lang-fr-mobile" className={`px-2.5 py-1 text-xs font-semibold ${lang === "fr" ? "bg-brand-gold text-white" : scrolled ? "text-brand-text" : "text-white/80"}`}>FR</button>
                 <button onClick={() => switchLang("en")} data-testid="lang-en-mobile" className={`px-2.5 py-1 text-xs font-semibold ${lang === "en" ? "bg-brand-gold text-white" : scrolled ? "text-brand-text" : "text-white/80"}`}>EN</button>
               </div>
+              <button
+                onClick={openDrawer}
+                data-testid="navbar-cart-btn-mobile"
+                className={`relative p-2 rounded-md ${scrolled || mobileOpen ? "text-brand-black" : "text-white"}`}
+                aria-label="Open cart"
+              >
+                <ShoppingBag size={20} />
+                {totalItems > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 bg-brand-orange text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center leading-none">
+                    {totalItems}
+                  </span>
+                )}
+              </button>
               <button
                 onClick={() => setMobileOpen(!mobileOpen)}
                 data-testid="mobile-menu-toggle"
@@ -136,7 +165,7 @@ export default function Navbar() {
                 </Link>
               ))}
               <a
-                href="https://www.ubereats.com/ca-fr/store/chala-le-gouter-antillais/5PogqSjLWTKTUIYfVPvYPw"
+                href={restaurantConfig.uberEatsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block mt-3 bg-brand-orange text-white text-center py-3 rounded-md font-semibold font-body"
@@ -144,10 +173,10 @@ export default function Navbar() {
                 {T.nav.orderOnline}
               </a>
               <a
-                href="tel:+15145883708"
+                href={`tel:${restaurantConfig.phone.replace(/[^0-9+]/g, "")}`}
                 className="flex items-center justify-center gap-2 mt-2 border border-brand-green text-brand-green py-3 rounded-md font-semibold font-body"
               >
-                <Phone size={16} /> (514) 588-3708
+                <Phone size={16} /> {restaurantConfig.phone}
               </a>
             </div>
           </div>
@@ -156,7 +185,7 @@ export default function Navbar() {
 
       {/* Mobile floating call button */}
       <a
-        href="tel:+15145883708"
+        href={`tel:${restaurantConfig.phone.replace(/[^0-9+]/g, "")}`}
         data-testid="mobile-call-btn"
         className="lg:hidden fixed bottom-6 right-6 z-40 bg-brand-green text-white p-4 rounded-full shadow-lg hover:bg-green-800 transition-all duration-200 hover:scale-110"
         aria-label="Call us"

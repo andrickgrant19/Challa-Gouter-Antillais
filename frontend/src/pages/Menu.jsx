@@ -1,20 +1,57 @@
 import { useState, useEffect } from "react";
-import { Flame, ExternalLink } from "lucide-react";
+import { Flame, ExternalLink, Plus } from "lucide-react";
 import { useLanguage } from "../context/LanguageContext";
+import { useCart } from "../context/CartContext";
 import translations from "../translations";
 import menuData from "../menuData";
+import { restaurantConfig } from "../restaurant.config";
+import { supabase } from "../lib/supabase";
 import { useScrollRevealAll } from "../hooks/useScrollReveal";
 
 export default function Menu() {
   const { lang } = useLanguage();
   const T = translations[lang];
-  const data = menuData[lang];
+  const staticData = menuData[lang];
   const [activeCategory, setActiveCategory] = useState("all");
+  const [dbItems, setDbItems] = useState(null); // null = not loaded, [] = loaded but empty
   useScrollRevealAll();
 
+  // Try to load from Supabase; fallback to static
+  useEffect(() => {
+    if (!supabase) { setDbItems([]); return; }
+    let cancelled = false;
+    supabase
+      .from("menu_items")
+      .select("*")
+      .eq("is_available", true)
+      .order("display_order", { ascending: true })
+      .then(({ data, error }) => {
+        if (cancelled) return;
+        if (error || !data) { setDbItems([]); return; }
+        setDbItems(data);
+      });
+    return () => { cancelled = true; };
+  }, []);
+
+  // Merge: if DB has items, group them by category and use them; else fallback
+  const data = (() => {
+    if (!dbItems || dbItems.length === 0) return staticData;
+    const byCat = {};
+    dbItems.forEach((it) => {
+      if (!byCat[it.category]) byCat[it.category] = { id: it.category, name: it.category, image: it.image_url || "", items: [] };
+      byCat[it.category].items.push({
+        id: it.id,
+        name: it.name,
+        description: it.description || "",
+        spicy: false,
+        price: parseFloat(it.price),
+        image: it.image_url || byCat[it.category].image,
+      });
+    });
+    return Object.values(byCat);
+  })();
+
   const categories = data.map((c) => ({ id: c.id, name: c.name }));
-  const allItems = data.flatMap((c) => c.items.map((item) => ({ ...item, category: c.id, categoryName: c.name, image: c.image })));
-  const displayItems = activeCategory === "all" ? allItems : data.find((c) => c.id === activeCategory)?.items.map((item) => ({ ...item, category: activeCategory, categoryName: data.find((c) => c.id === activeCategory)?.name, image: data.find((c) => c.id === activeCategory)?.image })) || [];
 
   return (
     <main className="bg-brand-cream min-h-screen">
@@ -25,7 +62,7 @@ export default function Menu() {
       >
         <div className="absolute inset-0 bg-black/70" />
         <div className="relative z-10 text-center px-6">
-          <span className="text-brand-gold text-xs font-body font-semibold tracking-[0.2em] uppercase block mb-3">Chala Le Gouter Antillais</span>
+          <span className="text-brand-gold text-xs font-body font-semibold tracking-[0.2em] uppercase block mb-3">{restaurantConfig.name}</span>
           <h1 data-testid="menu-title" className="font-heading text-5xl md:text-6xl font-bold text-white mb-4">{T.menu.title}</h1>
           <p className="text-white/70 font-body text-base md:text-lg max-w-lg mx-auto">{T.menu.subtitle}</p>
         </div>
@@ -34,7 +71,7 @@ export default function Menu() {
       {/* Uber Eats CTA */}
       <div className="bg-brand-orange py-4 px-6 text-center">
         <a
-          href="https://www.ubereats.com/ca-fr/store/chala-le-gouter-antillais/5PogqSjLWTKTUIYfVPvYPw"
+          href={restaurantConfig.uberEatsUrl}
           target="_blank"
           rel="noopener noreferrer"
           data-testid="ubereats-menu-btn"
@@ -85,34 +122,47 @@ export default function Menu() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {category.items.map((item) => (
-                  <MenuItemCard key={item.id} item={item} image={category.image} lang={lang} T={T} />
+                  <MenuItemCard key={item.id} item={item} image={item.image || category.image} lang={lang} T={T} />
                 ))}
               </div>
             </div>
           ))
         ) : (
-          <div>
-            <div className="flex items-center gap-4 mb-6">
-              <h2 className="font-heading text-3xl font-bold text-brand-black">
-                {data.find((c) => c.id === activeCategory)?.name}
-              </h2>
-              <span className="gold-divider self-center" />
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {displayItems.map((item) => (
-                <MenuItemCard key={item.id} item={item} image={item.image} lang={lang} T={T} />
-              ))}
-            </div>
-          </div>
+          (() => {
+            const cat = data.find((c) => c.id === activeCategory);
+            if (!cat) return null;
+            return (
+              <div>
+                <div className="flex items-center gap-4 mb-6">
+                  <h2 className="font-heading text-3xl font-bold text-brand-black">{cat.name}</h2>
+                  <span className="gold-divider self-center" />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {cat.items.map((item) => (
+                    <MenuItemCard key={item.id} item={item} image={item.image || cat.image} lang={lang} T={T} />
+                  ))}
+                </div>
+              </div>
+            );
+          })()
         )}
       </section>
     </main>
   );
 }
 
-function MenuItemCard({ item, image, T }) {
+function MenuItemCard({ item, image, lang, T }) {
+  const { addItem } = useCart();
+  const [adding, setAdding] = useState(false);
+
+  const handleAdd = () => {
+    addItem({ id: item.id, name: item.name, unit_price: item.price, image });
+    setAdding(true);
+    setTimeout(() => setAdding(false), 700);
+  };
+
   return (
-    <div data-testid={`menu-item-${item.id}`} className="reveal bg-white rounded-xl overflow-hidden border border-brand-border hover:shadow-md transition-all duration-300 group">
+    <div data-testid={`menu-item-${item.id}`} className="reveal bg-white rounded-xl overflow-hidden border border-brand-border hover:shadow-md transition-all duration-300 group flex flex-col">
       <div className="relative h-40 overflow-hidden">
         <img src={image} alt={item.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
         {item.spicy && (
@@ -120,10 +170,27 @@ function MenuItemCard({ item, image, T }) {
             <Flame size={10} /> {T.menu.spicy}
           </span>
         )}
+        {typeof item.price === "number" && (
+          <span className="absolute bottom-2 left-2 bg-white/95 text-brand-orange text-xs font-bold px-2.5 py-1 rounded-full shadow">
+            ${item.price.toFixed(2)}
+          </span>
+        )}
       </div>
-      <div className="p-4">
+      <div className="p-4 flex-1 flex flex-col">
         <h3 className="font-heading text-lg font-semibold text-brand-black mb-1">{item.name}</h3>
-        <p className="text-brand-text font-body text-sm leading-relaxed">{item.description}</p>
+        <p className="text-brand-text font-body text-sm leading-relaxed flex-1">{item.description}</p>
+        {typeof item.price === "number" && (
+          <button
+            onClick={handleAdd}
+            data-testid={`add-to-cart-${item.id}`}
+            className={`mt-3 w-full inline-flex items-center justify-center gap-2 font-body font-semibold text-sm py-2.5 rounded-lg transition-all ${adding ? "bg-brand-green text-white" : "bg-brand-orange hover:bg-brand-orange-dark text-white"}`}
+          >
+            <Plus size={14} />
+            {adding
+              ? (lang === "fr" ? "Ajouté ✓" : "Added ✓")
+              : (lang === "fr" ? "Ajouter au panier" : "Add to Cart")}
+          </button>
+        )}
       </div>
     </div>
   );

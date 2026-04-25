@@ -1,0 +1,60 @@
+{
+  "summary": "Phase 2 full-stack testing of Chala Le Gouter Antillais. Backend: 11/11 pytest tests pass (health flags, checkout validation, no-Stripe order persistence, GET /api/orders/{id}, contact regression). Frontend: cart system (add, persistence, drawer, navbar badge), checkout form (pickup/delivery toggle, address conditional reveal), order confirmation, login page rendering, ProtectedRoute redirect, all 5 public pages preserved, FR/EN bilingual switch all work end-to-end. Two minor issues found: (1) login error displays raw JS error instead of friendly 'Invalid email or password' message — appears to be a supabase-js response body double-read; (2) OrderConfirmation page does NOT render customer info (name/email/phone) although review request asks for it.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "Login.jsx",
+        "issue": "Submitting wrong credentials shows raw JS error 'Failed to execute json on Response: body stream already read' instead of the localized 'Invalid email or password' fallback. supabase.auth.signInWithPassword throws an error whose message is unusable. Likely supabase-js library response-body race or anon key/network mismatch. Repro: visit /login → email=wrong@example.com, password=wrongpassword123 → submit. Network shows 400 from /auth/v1/token. Mitigation: in catch block, detect the body-stream message and substitute T.invalid; or upgrade @supabase/supabase-js; or always surface T.invalid when status is 400.",
+        "selector": "[data-testid=\"login-error\"]",
+        "priority": "MEDIUM"
+      },
+      {
+        "component": "OrderConfirmation.jsx",
+        "issue": "Confirmation page does not display customer_name, customer_email, or customer_phone — only order_type, delivery_address (delivery only), notes, items, and total. Review request explicitly states the page should show 'customer info'. Add a small section rendering order.customer_name / customer_email / customer_phone.",
+        "selector": "n/a (missing fields)",
+        "priority": "MEDIUM"
+      },
+      {
+        "component": "CartDrawer.jsx",
+        "issue": "Cart drawer lacks data-testid attributes on quantity +/- buttons, remove button, and subtotal element. Functionality is fine via UI, but testability suffers. Suggested testids: cart-qty-inc-{id}, cart-qty-dec-{id}, cart-remove-{id}, cart-subtotal.",
+        "selector": "CartDrawer internals",
+        "priority": "LOW"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_phase2_api.py",
+    "/app/test_reports/pytest/phase2_results.xml"
+  ],
+  "action_items": [
+    "Fix Login.jsx error handling: when supabase signInWithPassword throws with message containing 'body stream already read', display T.invalid instead. Better: wrap and inspect status, or upgrade @supabase/supabase-js.",
+    "Add customer info block to OrderConfirmation.jsx (name, email, phone) — review spec requires it.",
+    "Add data-testid attributes inside CartDrawer to qty +/-, remove, and subtotal for robust automated testing."
+  ],
+  "critical_code_review_comments": [
+    "server.py uses deprecated @app.on_event('shutdown'); migrate to FastAPI lifespan context manager.",
+    "Login.jsx catch clause trusts err.message — fragile against opaque 3rd-party errors; explicitly map 400/401 → T.invalid.",
+    "OrderConfirmation.jsx missing customer info rendering even though the API returns those fields.",
+    "CheckoutResponse model lets checkout_url default to None — fine, but consider serializing as null vs empty string consistently.",
+    "GET /api/orders/{order_id} with malformed UUID propagates Supabase 500; consider catching format errors and returning 404."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_phase2_api.py"
+  ],
+  "success_rate": {
+    "backend": "100% (11/11 pytest tests passed)",
+    "frontend": "90% — cart, checkout, order confirmation, login render, ProtectedRoute redirect, bilingual all working; login error message UX bug + missing customer info on confirmation are the two gaps."
+  },
+  "test_credentials": "Owner login NOT created yet (per /app/memory/test_credentials.md). Did NOT attempt real login — verified /login renders + /dashboard ProtectedRoute redirects to /login.",
+  "seed_data_creation": "Created multiple TEST_ prefixed orders in Supabase (pickup + delivery) and TEST_ contact messages in MongoDB. Order IDs are UUIDs — easily filterable by customer_name LIKE 'TEST_%' for cleanup.",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Phase 2 wired up. Backend test file: /app/backend/tests/test_phase2_api.py (11 tests, all green). Stripe is intentionally not configured — POST /api/checkout/create-session returns {stripe_configured:false, order_id} and frontend redirects to /order-confirmation?order_id=... — verified end-to-end. Cart persists in localStorage 'chala_cart' and is cleared after successful order submit. Owner login is NOT created in Supabase, so /dashboard testing is limited to ProtectedRoute redirect verification only. data-testids exist for: navbar-cart-btn, cart-close-btn, proceed-checkout-btn, cart-item-{id}, add-to-cart-{id}, checkout-{name|phone|email|notes|address}-input, order-type-{pickup|delivery}, checkout-submit-btn, checkout-error, checkout-stripe-missing, checkout-total, order-confirmation-hero, order-id, login-{email|password}-input, login-submit-btn, login-error. CartDrawer qty/remove/subtotal lack testids. Bilingual FR/EN works via lang-fr / lang-en buttons.",
+  "rca of the issue": "Login error UX bug RCA: supabase-js v2 internally tries to .json() on a Response that has already been read, producing the cryptic 'body stream already read' message which is what Login.jsx's catch block shows verbatim via err.message. The Login.jsx code already has a fallback (T.invalid) but never reaches it because err.message is truthy. Fix: in Login.jsx catch, do `const msg = err?.message || ''; setError(msg.includes('body stream') || /^[0-9]/.test(msg) ? T.invalid : msg);` — or, preferably, upgrade @supabase/supabase-js to a version that returns clean AuthApiError objects with .status and .name."
+}

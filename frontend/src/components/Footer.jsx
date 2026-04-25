@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { MapPin, Phone, Clock, ExternalLink } from "lucide-react";
 import { useLanguage } from "../context/LanguageContext";
+import { restaurantConfig } from "../restaurant.config";
 import translations from "../translations";
 
 export default function Footer() {
@@ -32,7 +33,7 @@ export default function Footer() {
               {T.footer.tagline}
             </p>
             <a
-              href="https://www.ubereats.com/ca-fr/store/chala-le-gouter-antillais/5PogqSjLWTKTUIYfVPvYPw"
+              href={restaurantConfig.uberEatsUrl}
               target="_blank"
               rel="noopener noreferrer"
               data-testid="footer-order-btn"
@@ -66,7 +67,7 @@ export default function Footer() {
               </div>
               <div className="flex gap-2.5">
                 <Phone size={15} className="text-brand-gold mt-0.5 flex-shrink-0" />
-                <a href="tel:+15145883708" className="hover:text-brand-gold transition-colors">{T.contact.phone}</a>
+                <a href={`tel:${restaurantConfig.phone.replace(/[^0-9+]/g, "")}`} className="hover:text-brand-gold transition-colors">{restaurantConfig.phone}</a>
               </div>
             </div>
           </div>
