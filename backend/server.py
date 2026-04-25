@@ -68,6 +68,15 @@ class CheckoutResponse(BaseModel):
     session_id: Optional[str] = None
     stripe_configured: bool
 
+class CateringRequest(BaseModel):
+    name: str
+    email: str
+    phone: Optional[str] = None
+    event_date: Optional[str] = None  # ISO date YYYY-MM-DD
+    event_type: Optional[str] = None
+    guest_count: Optional[int] = None
+    message: Optional[str] = None
+
 # ─── Supabase REST helpers ────────────────────────────────────────────────────
 
 def _sb_headers(prefer: Optional[str] = None) -> Dict[str, str]:
@@ -168,6 +177,29 @@ async def get_messages():
         except Exception:
             continue
     return out
+
+# ─── Catering ─────────────────────────────────────────────────────────────────
+
+@api_router.post("/catering")
+async def submit_catering(data: CateringRequest):
+    payload = {
+        "name": data.name.strip(),
+        "email": data.email.strip(),
+        "phone": (data.phone or "").strip() or None,
+        "event_date": data.event_date or None,
+        "event_type": (data.event_type or "").strip() or None,
+        "guest_count": data.guest_count if data.guest_count and data.guest_count > 0 else None,
+        "message": (data.message or "").strip() or None,
+    }
+    row = await sb_insert("catering_requests", payload)
+    logger.info(f"Catering request from {data.name} ({data.email}) — {payload.get('event_type') or 'unspecified'}")
+    return row
+
+@api_router.get("/catering")
+async def list_catering():
+    rows = await sb_get("catering_requests")
+    rows.sort(key=lambda r: r.get("created_at", ""), reverse=True)
+    return rows[:200]
 
 # ─── Checkout / Stripe ────────────────────────────────────────────────────────
 

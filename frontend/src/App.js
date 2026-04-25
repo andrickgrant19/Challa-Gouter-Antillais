@@ -19,6 +19,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import DashboardOrders from "./pages/DashboardOrders";
 import DashboardMenu from "./pages/DashboardMenu";
+import DashboardCatering from "./pages/DashboardCatering";
 import DashboardMessages from "./pages/DashboardMessages";
 import DashboardHistory from "./pages/DashboardHistory";
 
@@ -56,6 +57,7 @@ function App() {
               <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>}>
                 <Route index element={<DashboardOrders />} />
                 <Route path="menu" element={<DashboardMenu />} />
+                <Route path="catering" element={<DashboardCatering />} />
                 <Route path="messages" element={<DashboardMessages />} />
                 <Route path="history" element={<DashboardHistory />} />
               </Route>

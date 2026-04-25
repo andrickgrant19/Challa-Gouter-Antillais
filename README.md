@@ -49,7 +49,7 @@ Premium bilingual (FR / EN) restaurant website + lightweight e-commerce stack fo
 │   │       ├── Home.jsx, Menu.jsx, About.jsx, Catering.jsx, Reviews.jsx, Contact.jsx
 │   │       ├── Checkout.jsx, OrderConfirmation.jsx
 │   │       ├── Login.jsx
-│   │       └── Dashboard.jsx, DashboardOrders.jsx, DashboardMenu.jsx, DashboardMessages.jsx, DashboardHistory.jsx
+│   │       └── Dashboard.jsx, DashboardOrders.jsx, DashboardMenu.jsx, DashboardCatering.jsx, DashboardMessages.jsx, DashboardHistory.jsx
 │   └── .env.example
 ├── supabase_migrations.sql        # Idempotent schema for orders + menu_items + Realtime
 └── README.md
@@ -77,7 +77,8 @@ Premium bilingual (FR / EN) restaurant website + lightweight e-commerce stack fo
 | `/login` | Email + password (Supabase) |
 | `/dashboard` | Live orders (Realtime + audio ping) |
 | `/dashboard/menu` | Menu CRUD |
-| `/dashboard/messages` | Contact form & catering inquiries (realtime) |
+| `/dashboard/catering` | Catering inquiries with status flow (new → contacted → quoted → booked → completed) |
+| `/dashboard/messages` | Contact form & generic inquiries (realtime) |
 | `/dashboard/history` | Last 200 orders, status filters |
 
 ---
@@ -89,6 +90,8 @@ Premium bilingual (FR / EN) restaurant website + lightweight e-commerce stack fo
 | GET    | `/api/health` | Health + feature flags (`supabase_configured`, `stripe_configured`) |
 | POST   | `/api/contact` | Save contact form message (Supabase) |
 | GET    | `/api/contact` | List messages (admin) |
+| POST   | `/api/catering` | Save a catering request (name, email, phone, event_date, event_type, guest_count, message) |
+| GET    | `/api/catering` | List catering requests (admin) |
 | POST   | `/api/checkout/create-session` | Save order → Supabase, optionally create Stripe Session |
 | POST   | `/api/webhooks/stripe` | Handle `checkout.session.completed` → flip status to `in_progress` |
 | GET    | `/api/orders/{order_id}` | Fetch order by id |

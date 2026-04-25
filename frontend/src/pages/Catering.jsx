@@ -11,7 +11,7 @@ export default function Catering() {
   const { lang } = useLanguage();
   const T = translations[lang];
   const C = T.cateringPage;
-  const [form, setForm] = useState({ name: "", email: "", phone: "", event_type: "", message: "" });
+  const [form, setForm] = useState({ name: "", email: "", phone: "", event_date: "", event_type: "", guest_count: "", message: "" });
   const [status, setStatus] = useState(null);
   useScrollRevealAll();
 
@@ -19,12 +19,21 @@ export default function Catering() {
     e.preventDefault();
     setStatus("loading");
     try {
-      const res = await fetch(`${BACKEND_URL}/api/contact`, {
+      const payload = {
+        name: form.name,
+        email: form.email,
+        phone: form.phone || null,
+        event_date: form.event_date || null,
+        event_type: form.event_type || null,
+        guest_count: form.guest_count ? parseInt(form.guest_count, 10) : null,
+        message: form.message || null,
+      };
+      const res = await fetch(`${BACKEND_URL}/api/catering`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, subject: `Catering Inquiry - ${form.event_type}` }),
+        body: JSON.stringify(payload),
       });
-      if (res.ok) { setStatus("success"); setForm({ name: "", email: "", phone: "", event_type: "", message: "" }); }
+      if (res.ok) { setStatus("success"); setForm({ name: "", email: "", phone: "", event_date: "", event_type: "", guest_count: "", message: "" }); }
       else setStatus("error");
     } catch { setStatus("error"); }
   };
@@ -134,6 +143,16 @@ export default function Catering() {
                     <option value="">{lang === "fr" ? "Sélectionner..." : "Select..."}</option>
                     {T.catering.events.map((ev, i) => <option key={i} value={ev.title}>{ev.title}</option>)}
                   </select>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-body font-medium text-brand-black mb-1.5">{lang === "fr" ? "Date de l'Événement" : "Event Date"}</label>
+                  <input type="date" value={form.event_date} onChange={(e) => setForm({...form, event_date: e.target.value})} data-testid="catering-event-date" className="w-full border border-brand-border rounded-lg px-4 py-3 font-body text-sm focus:outline-none focus:ring-2 focus:ring-brand-orange/30 focus:border-brand-orange bg-white" />
+                </div>
+                <div>
+                  <label className="block text-sm font-body font-medium text-brand-black mb-1.5">{lang === "fr" ? "Nombre d'Invités" : "Guest Count"}</label>
+                  <input type="number" min="1" value={form.guest_count} onChange={(e) => setForm({...form, guest_count: e.target.value})} data-testid="catering-guest-count" placeholder={lang === "fr" ? "Ex: 25" : "e.g. 25"} className="w-full border border-brand-border rounded-lg px-4 py-3 font-body text-sm focus:outline-none focus:ring-2 focus:ring-brand-orange/30 focus:border-brand-orange bg-white" />
                 </div>
               </div>
               <div>
