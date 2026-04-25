@@ -24,6 +24,10 @@ export default function OrderConfirmation() {
     refTxt:   lang === "fr" ? "Numéro de référence" : "Reference number",
     detailsTitle: lang === "fr" ? "Détails de la commande" : "Order Details",
     items:    lang === "fr" ? "Articles" : "Items",
+    customer: lang === "fr" ? "Vos coordonnées" : "Your Details",
+    cName:    lang === "fr" ? "Nom" : "Name",
+    cEmail:   lang === "fr" ? "Courriel" : "Email",
+    cPhone:   lang === "fr" ? "Téléphone" : "Phone",
     type:     lang === "fr" ? "Type" : "Type",
     pickup:   lang === "fr" ? "À emporter" : "Pickup",
     delivery: lang === "fr" ? "Livraison" : "Delivery",
@@ -108,6 +112,16 @@ export default function OrderConfirmation() {
         {/* Details */}
         <div className="bg-white rounded-2xl border border-brand-border p-6 lg:p-8 shadow-sm mb-6">
           <h2 className="font-heading text-xl font-semibold text-brand-black mb-4">{T.detailsTitle}</h2>
+
+          {/* Customer Info */}
+          <div className="bg-brand-cream rounded-xl p-4 mb-5" data-testid="order-customer-info">
+            <h3 className="font-heading text-sm font-semibold text-brand-black mb-2 uppercase tracking-wider">{T.customer}</h3>
+            <div className="space-y-1 text-sm font-body text-brand-text">
+              <p data-testid="order-customer-name"><span className="font-semibold text-brand-black">{T.cName}:</span> {order.customer_name}</p>
+              <p data-testid="order-customer-email"><span className="font-semibold text-brand-black">{T.cEmail}:</span> {order.customer_email}</p>
+              <p data-testid="order-customer-phone"><span className="font-semibold text-brand-black">{T.cPhone}:</span> {order.customer_phone}</p>
+            </div>
+          </div>
 
           <div className="space-y-2 text-sm font-body text-brand-text mb-5">
             <p><span className="font-semibold text-brand-black">{T.type}:</span> {isDelivery ? T.delivery : T.pickup}</p>

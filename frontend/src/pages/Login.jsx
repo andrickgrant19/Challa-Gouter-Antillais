@@ -40,7 +40,15 @@ export default function Login() {
       if (error) throw error;
       navigate("/dashboard");
     } catch (err) {
-      setError(err.message || T.invalid);
+      const raw = err?.message || "";
+      // supabase-js sometimes throws an unusable Response error; map known cases to a friendly message
+      const isOpaque =
+        raw.includes("body stream") ||
+        raw.includes("Failed to execute") ||
+        raw.includes("fetch") ||
+        err?.status === 400 ||
+        err?.status === 401;
+      setError(isOpaque ? T.invalid : raw || T.invalid);
     } finally {
       setSubmitting(false);
     }

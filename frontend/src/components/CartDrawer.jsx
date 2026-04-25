@@ -64,14 +64,14 @@ export default function CartDrawer() {
                     <p className="font-body text-sm text-brand-orange font-bold">${(parseFloat(item.unit_price) * item.quantity).toFixed(2)}</p>
                     <p className="font-body text-xs text-brand-text">${parseFloat(item.unit_price).toFixed(2)} each</p>
                     <div className="flex items-center gap-2 mt-1.5">
-                      <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="w-6 h-6 rounded-full bg-white border border-brand-border flex items-center justify-center hover:bg-brand-orange hover:text-white hover:border-brand-orange transition-colors">
+                      <button data-testid={`cart-qty-dec-${item.id}`} onClick={() => updateQuantity(item.id, item.quantity - 1)} className="w-6 h-6 rounded-full bg-white border border-brand-border flex items-center justify-center hover:bg-brand-orange hover:text-white hover:border-brand-orange transition-colors">
                         <Minus size={10} />
                       </button>
-                      <span className="font-body text-sm font-bold w-4 text-center">{item.quantity}</span>
-                      <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="w-6 h-6 rounded-full bg-white border border-brand-border flex items-center justify-center hover:bg-brand-orange hover:text-white hover:border-brand-orange transition-colors">
+                      <span data-testid={`cart-qty-${item.id}`} className="font-body text-sm font-bold w-4 text-center">{item.quantity}</span>
+                      <button data-testid={`cart-qty-inc-${item.id}`} onClick={() => updateQuantity(item.id, item.quantity + 1)} className="w-6 h-6 rounded-full bg-white border border-brand-border flex items-center justify-center hover:bg-brand-orange hover:text-white hover:border-brand-orange transition-colors">
                         <Plus size={10} />
                       </button>
-                      <button onClick={() => removeItem(item.id)} className="ml-auto text-red-400 hover:text-red-600 transition-colors">
+                      <button data-testid={`cart-remove-${item.id}`} onClick={() => removeItem(item.id)} className="ml-auto text-red-400 hover:text-red-600 transition-colors">
                         <Trash2 size={14} />
                       </button>
                     </div>
@@ -87,7 +87,7 @@ export default function CartDrawer() {
           <div className="p-5 border-t border-brand-border bg-white">
             <div className="flex justify-between mb-4">
               <span className="font-body font-semibold text-brand-black">{T.subtotal}</span>
-              <span className="font-body font-bold text-xl text-brand-orange">${totalPrice.toFixed(2)}</span>
+              <span data-testid="cart-subtotal" className="font-body font-bold text-xl text-brand-orange">${totalPrice.toFixed(2)}</span>
             </div>
             <button data-testid="proceed-checkout-btn" onClick={handleCheckout} className="w-full bg-brand-orange hover:bg-brand-orange-dark text-white font-body font-semibold py-4 rounded-xl transition-colors text-base">
               {T.checkout} →
