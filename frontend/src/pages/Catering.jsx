@@ -60,50 +60,6 @@ export default function Catering() {
       {/* Catering Slideshow */}
       <CateringSlideshow />
 
-      {/* Intro */}
-      <section className="py-24 lg:py-32">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div className="reveal-left">
-              <span className="gold-divider mb-5" />
-              <h2 className="font-heading text-4xl md:text-5xl font-bold text-brand-black whitespace-pre-line leading-tight mb-6">{C.intro.title}</h2>
-              <p className="text-brand-text font-body text-base leading-relaxed mb-5">{C.intro.p1}</p>
-              <p className="text-brand-text font-body text-base leading-relaxed mb-8">{C.intro.p2}</p>
-              <div className="space-y-2.5">
-                {T.catering.features.map((f, i) => (
-                  <div key={i} className="flex items-center gap-3 font-body text-sm text-brand-text">
-                    <div className="w-5 h-5 rounded-full bg-brand-green flex items-center justify-center flex-shrink-0">
-                      <Check size={11} className="text-white" />
-                    </div>
-                    {f}
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="reveal-right">
-              <div className="grid grid-cols-2 gap-4">
-                {T.catering.events.map((ev, i) => {
-                  const EvIcon = EVENT_ICONS[i] || Heart;
-                  return (
-                    <div
-                      key={i}
-                      data-testid={`catering-event-${i}`}
-                      className="bg-white rounded-xl p-5 border border-brand-border hover:shadow-md transition-all duration-300 hover:border-brand-gold/40"
-                    >
-                      <div className="w-10 h-10 bg-brand-orange/10 rounded-lg flex items-center justify-center mb-3">
-                        <EvIcon size={20} className="text-brand-orange" />
-                      </div>
-                      <h3 className="font-heading text-base font-semibold text-brand-black mb-1">{ev.title}</h3>
-                      <p className="text-brand-text text-xs font-body leading-relaxed">{ev.desc}</p>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Why Us */}
       <section className="py-16 bg-brand-cream-secondary">
         <div className="max-w-4xl mx-auto px-6 text-center reveal">
