@@ -74,18 +74,36 @@ function Loading() {
     </div>
   );
 }
-function SetupNeeded() {
+function SetupNeeded({ reason }) {
   const { lang } = useLanguage();
+  const messages = {
+    "no-client": lang === "fr"
+      ? "Configuration Supabase manquante. Ajoutez REACT_APP_SUPABASE_URL et REACT_APP_SUPABASE_ANON_KEY aux variables d'environnement Vercel, puis redéployez."
+      : "Supabase credentials are missing. Add REACT_APP_SUPABASE_URL and REACT_APP_SUPABASE_ANON_KEY to your Vercel environment variables, then redeploy.",
+    "table-missing": lang === "fr"
+      ? "Une ou plusieurs tables ne sont pas encore créées dans Supabase. Exécutez supabase_migrations.sql dans l'éditeur SQL Supabase."
+      : "One or more tables don't exist yet. Run supabase_migrations.sql in the Supabase SQL Editor.",
+    "empty": lang === "fr"
+      ? "Aucun élément disponible dans cette section pour le moment."
+      : "No items available in this section right now.",
+    "rls": lang === "fr"
+      ? "Les permissions de lecture publique ne sont pas activées. Réexécutez supabase_migrations.sql pour appliquer les politiques RLS."
+      : "Public read permissions are not enabled. Re-run supabase_migrations.sql to apply RLS policies.",
+  };
   return (
     <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6 text-center max-w-2xl mx-auto">
       <AlertCircle className="mx-auto text-amber-600 mb-3" size={32} />
-      <p className="font-body text-amber-900">
-        {lang === "fr"
-          ? "Cette section n'est pas encore configurée. Le propriétaire doit exécuter la migration Supabase."
-          : "This section isn't configured yet. The owner needs to run the Supabase migration."}
-      </p>
+      <p className="font-body text-amber-900">{messages[reason] || messages.empty}</p>
     </div>
   );
+}
+
+function classifyError(err) {
+  if (!err) return null;
+  const msg = (err.message || String(err)).toLowerCase();
+  if (msg.includes("could not find the table") || msg.includes("does not exist") || msg.includes("relation")) return "table-missing";
+  if (msg.includes("permission denied") || msg.includes("rls") || msg.includes("policy") || err.code === "42501") return "rls";
+  return null;
 }
 
 // ─── INDIVIDUAL COMBO ────────────────────────────────────────────────────────
@@ -97,7 +115,7 @@ export function IndividualBuilder() {
   const [sides, setSides] = useState([]);
   const [extras, setExtras] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [setup, setSetup] = useState(false);
+  const [setupReason, setSetupReason] = useState(null);
   const [proteinId, setProteinId] = useState(null);
   const [baseId, setBaseId] = useState(null);
   const [sideId, setSideId] = useState(null);
@@ -105,21 +123,39 @@ export function IndividualBuilder() {
   const [feedback, setFeedback] = useState(null);
 
   useEffect(() => {
-    if (!supabase) { setSetup(true); setLoading(false); return; }
+    if (typeof window !== "undefined") {
+      // eslint-disable-next-line no-console
+      console.log("[IndividualBuilder] mount. supabase=", !!supabase, "url=", process.env.REACT_APP_SUPABASE_URL?.slice(0, 35));
+    }
+    if (!supabase) { setSetupReason("no-client"); setLoading(false); return; }
     let cancelled = false;
     const load = async () => {
+      // eslint-disable-next-line no-console
+      console.log("[IndividualBuilder] starting fetch...");
       const [p, b, s, e] = await Promise.all([
         supabase.from("combo_proteins").select("*").eq("is_available", true).order("display_order"),
         supabase.from("combo_bases").select("*").eq("is_available", true).order("display_order"),
         supabase.from("combo_sides").select("*").eq("is_available", true).order("display_order"),
         supabase.from("combo_extras").select("*").eq("is_available", true).order("display_order"),
       ]);
+      // eslint-disable-next-line no-console
+      console.log("[IndividualBuilder] fetch done. proteins=", p.data?.length, "err=", p.error?.message, "bases=", b.data?.length, "err=", b.error?.message);
       if (cancelled) return;
-      const err = p.error?.message || b.error?.message || s.error?.message || e.error?.message;
-      if (err) { setSetup(true); setLoading(false); return; }
-      setProteins(p.data || []); setBases(b.data || []); setSides(s.data || []); setExtras(e.data || []);
+      // Diagnose: only block the UI if proteins OR bases (the two required steps) fail.
+      const reason = classifyError(p.error) || classifyError(b.error);
+      if (reason) {
+        console.error("[IndividualBuilder] supabase error:", { p: p.error, b: b.error, s: s.error, e: e.error });
+        setSetupReason(reason); setLoading(false); return;
+      }
+      setProteins(p.data || []);
+      setBases(b.data || []);
+      setSides(s.data || []);
+      setExtras(e.data || []);
+      // If proteins fetched OK but is empty, that's a seed issue
+      if ((p.data || []).length === 0) { setSetupReason("empty"); setLoading(false); return; }
       const aucun = (s.data || []).find((x) => x.name === "Aucun" || x.name_en === "None");
       if (aucun) setSideId(aucun.id);
+      setSetupReason(null);
       setLoading(false);
     };
     load();
@@ -169,7 +205,7 @@ export function IndividualBuilder() {
   };
 
   if (loading) return <Loading />;
-  if (setup || proteins.length === 0) return <SetupNeeded />;
+  if (setupReason) return <SetupNeeded reason={setupReason} />;
 
   const T = {
     s1: lang === "fr" ? "1. Choisissez votre protéine" : "1. Choose your protein",
@@ -259,14 +295,14 @@ export function FamilyBuilder() {
   const [bases, setBases] = useState([]);
   const [extras, setExtras] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [setup, setSetup] = useState(false);
+  const [setupReason, setSetupReason] = useState(null);
   const [proteinId, setProteinId] = useState(null);
   const [baseId, setBaseId] = useState(null);
   const [extraIds, setExtraIds] = useState([]);
   const [feedback, setFeedback] = useState(null);
 
   useEffect(() => {
-    if (!supabase) { setSetup(true); setLoading(false); return; }
+    if (!supabase) { setSetupReason("no-client"); setLoading(false); return; }
     let cancelled = false;
     const load = async () => {
       const [p, b, e] = await Promise.all([
@@ -275,9 +311,14 @@ export function FamilyBuilder() {
         supabase.from("combo_extras").select("*").eq("is_available", true).order("display_order"),
       ]);
       if (cancelled) return;
-      const err = p.error?.message || b.error?.message || e.error?.message;
-      if (err) { setSetup(true); setLoading(false); return; }
+      const reason = classifyError(p.error) || classifyError(b.error);
+      if (reason) {
+        console.error("[FamilyBuilder] supabase error:", { p: p.error, b: b.error, e: e.error });
+        setSetupReason(reason); setLoading(false); return;
+      }
       setProteins(p.data || []); setBases(b.data || []); setExtras(e.data || []);
+      if ((p.data || []).length === 0) { setSetupReason("empty"); setLoading(false); return; }
+      setSetupReason(null);
       setLoading(false);
     };
     load();
@@ -321,7 +362,7 @@ export function FamilyBuilder() {
   };
 
   if (loading) return <Loading />;
-  if (setup || proteins.length === 0) return <SetupNeeded />;
+  if (setupReason) return <SetupNeeded reason={setupReason} />;
 
   const T = {
     badge: lang === "fr" ? "Pour 4 personnes" : "For 4 people",
@@ -405,10 +446,10 @@ export function DrinksMenu() {
   const [items, setItems] = useState([]);
   const [active, setActive] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [setup, setSetup] = useState(false);
+  const [setupReason, setSetupReason] = useState(null);
 
   useEffect(() => {
-    if (!supabase) { setSetup(true); setLoading(false); return; }
+    if (!supabase) { setSetupReason("no-client"); setLoading(false); return; }
     let cancelled = false;
     const load = async () => {
       const [c, i] = await Promise.all([
@@ -416,9 +457,15 @@ export function DrinksMenu() {
         supabase.from("drinks_items").select("*").eq("is_available", true).order("display_order"),
       ]);
       if (cancelled) return;
-      if (c.error || i.error) { setSetup(true); setLoading(false); return; }
+      const reason = classifyError(c.error) || classifyError(i.error);
+      if (reason) {
+        console.error("[DrinksMenu] supabase error:", { c: c.error, i: i.error });
+        setSetupReason(reason); setLoading(false); return;
+      }
       setCats(c.data || []); setItems(i.data || []);
+      if ((c.data || []).length === 0) { setSetupReason("empty"); setLoading(false); return; }
       if ((c.data || []).length && !active) setActive(c.data[0].id);
+      setSetupReason(null);
       setLoading(false);
     };
     load();
@@ -431,7 +478,7 @@ export function DrinksMenu() {
   }, []);
 
   if (loading) return <Loading />;
-  if (setup || cats.length === 0) return <SetupNeeded />;
+  if (setupReason) return <SetupNeeded reason={setupReason} />;
 
   const visible = items.filter((x) => x.category_id === active);
   return (
@@ -489,16 +536,22 @@ export function DessertsMenu() {
   const { addItem } = useCart();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [setup, setSetup] = useState(false);
+  const [setupReason, setSetupReason] = useState(null);
 
   useEffect(() => {
-    if (!supabase) { setSetup(true); setLoading(false); return; }
+    if (!supabase) { setSetupReason("no-client"); setLoading(false); return; }
     let cancelled = false;
     const load = async () => {
       const r = await supabase.from("desserts").select("*").eq("is_available", true).order("display_order");
       if (cancelled) return;
-      if (r.error) { setSetup(true); setLoading(false); return; }
-      setItems(r.data || []); setLoading(false);
+      const reason = classifyError(r.error);
+      if (reason) {
+        console.error("[DessertsMenu] supabase error:", r.error);
+        setSetupReason(reason); setLoading(false); return;
+      }
+      setItems(r.data || []);
+      setSetupReason(null);
+      setLoading(false);
     };
     load();
     const ch = supabase.channel("desserts-pub")
@@ -508,7 +561,7 @@ export function DessertsMenu() {
   }, []);
 
   if (loading) return <Loading />;
-  if (setup) return <SetupNeeded />;
+  if (setupReason) return <SetupNeeded reason={setupReason} />;
   if (items.length === 0) {
     return (
       <div className="text-center py-16 max-w-md mx-auto">
