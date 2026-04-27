@@ -84,25 +84,30 @@ export default function Contact() {
           <div className="grid lg:grid-cols-2 gap-12">
             {/* Map */}
             <div className="space-y-6 reveal-left">
-              <a
-                href="https://www.google.com/maps/place/Chala+le+gouter+antillais/@45.6499259,-73.5635998,17z/data=!3m1!4b1!4m6!3m5!1s0x4cc8e101a10f26b5:0xdb7bbf002c0af43f!8m2!3d45.6499222!4d-73.5610249!16s%2Fg%2F11tc1gxpwz"
-                target="_blank"
-                rel="noopener noreferrer"
-                data-testid="google-map-link"
-                className="block rounded-2xl overflow-hidden shadow-lg cursor-pointer"
-                aria-label={lang === "fr" ? "Voir sur Google Maps" : "View on Google Maps"}
-              >
-                <iframe
-                  title="Chala Le Goûter Antillais"
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2793.876!2d-73.5635998!3d45.6499259!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4cc8e101a10f26b5%3A0xdb7bbf002c0af43f!2sChala+le+gouter+antillais!5e0!3m2!1sfr!2sca!4v1714200000000!5m2!1sfr!2sca"
-                  width="100%"
-                  className="block w-full h-[280px] md:h-[450px] border-0 pointer-events-none"
-                  allowFullScreen=""
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  data-testid="google-map"
-                />
-              </a>
+              <div>
+                <div className="rounded-3xl overflow-hidden border border-gray-200 shadow-lg h-[320px]">
+                  <iframe
+                    title="Chala Le Goûter Antillais"
+                    src="https://www.google.com/maps?q=11866+Bd+Rivi%C3%A8re-des-Prairies%2C+Montr%C3%A9al%2C+QC+H1C+1P9&output=embed"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    allowFullScreen
+                    data-testid="google-map"
+                  />
+                </div>
+                <a
+                  href="https://www.google.com/maps/place/Chala+le+gouter+antillais/@45.6499259,-73.5610249,17z"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-testid="google-map-link"
+                  className="mt-3 inline-flex items-center gap-2 text-sm text-orange-600 hover:text-orange-700 font-medium"
+                >
+                  📍 {lang === "fr" ? "Ouvrir dans Google Maps" : "Open in Google Maps"} →
+                </a>
+              </div>
               {/* Full Hours Table */}
               <div className="bg-white rounded-xl border border-brand-border p-6 shadow-sm">
                 <h3 className="font-heading text-lg font-semibold text-brand-black mb-4 flex items-center gap-2">
