@@ -4,7 +4,7 @@
 Premium bilingual (FR/EN) restaurant website + lightweight e-commerce stack for Chala Le Gouter Antillais, a Caribbean/Antillean restaurant in Montreal, Canada.
 
 **URL**: https://antilles-kitchen.preview.emergentagent.com
-**Last Updated**: 2026-04-25
+**Last Updated**: 2026-04-27
 
 ---
 
@@ -77,6 +77,15 @@ All shared values now live in `/app/frontend/src/restaurant.config.js`.
 
 ---
 
+## Implemented (2026-04-27 — Stale-deploy cleanup + Owner allowlist)
+- [x] Deleted orphan `/app/frontend/src/components/ComboBuilder.jsx` (dead code that contained the old "n'est pas encore configurée" string and would short-circuit before any Supabase request when env vars weren't baked in at Vercel build time). Live site was rendering this stale build.
+- [x] Added `REACT_APP_OWNER_EMAILS` (comma-separated) allowlist via new helper `/app/frontend/src/lib/ownerAuth.js` (`isOwnerAllowed`, `hasOwnerAllowlist`).
+- [x] `Login.jsx` now signs the user out and shows "This account is not authorized to access the dashboard" if their email isn't in the allowlist.
+- [x] `ProtectedRoute.jsx` enforces the allowlist on session restore + auth state changes.
+- [x] If `REACT_APP_OWNER_EMAILS` is unset (legacy), behavior is unchanged: any authenticated Supabase user passes — non-breaking.
+- [x] Documented owner setup flow in `/app/SUPABASE_OWNER_SETUP.md`.
+- [x] Verified `/menu` renders 4 tabs + 5 protein cards + 3 base cards on preview, no setup warnings.
+
 ## Implemented (2026-04-25 — Phase 2 e-commerce)
 - [x] Supabase wired up (URL + anon + service_role keys in env)
 - [x] Cart system (CartContext + CartDrawer + FloatingCart + Navbar cart icon)
@@ -107,13 +116,15 @@ All shared values now live in `/app/frontend/src/restaurant.config.js`.
 ---
 
 ## Pending (handover items for the user)
-1. **Run `/app/supabase_migrations.sql`** in Supabase Dashboard → SQL Editor (idempotent — patches the missing `stripe_session_id` column and ensures `orders` is in the realtime publication).
-2. **Create the owner user** in Supabase Dashboard → Authentication → Users (will be used at `/login`).
-3. **Add Stripe keys** to `/app/backend/.env`:
+1. **Push the latest code to GitHub** ("Save to GitHub" button in the chat) so Vercel rebuilds. The live site is showing an old "Cette section n'est pas encore configurée" message because the deployed bundle predates `MenuSections.jsx` and was built when `REACT_APP_SUPABASE_*` were still missing in Vercel.
+2. **Create the owner user** in Supabase Dashboard → Authentication → Users (see `/app/SUPABASE_OWNER_SETUP.md`). Recommended: enable "Auto Confirm User".
+3. **Add `REACT_APP_OWNER_EMAILS`** (comma-separated) to BOTH `/app/frontend/.env` AND your Vercel project Environment Variables → redeploy.
+4. **Run `/app/supabase_migrations.sql`** in Supabase Dashboard → SQL Editor (idempotent — patches the missing `stripe_session_id` column and ensures `orders` is in the realtime publication).
+5. **Add Stripe keys** to `/app/backend/.env`:
    - `STRIPE_SECRET_KEY=sk_test_...`
    - `STRIPE_WEBHOOK_SECRET=whsec_...`
    - And `REACT_APP_STRIPE_PUBLISHABLE_KEY=pk_test_...` to `/app/frontend/.env`
-4. Configure the Stripe webhook to point at `{REACT_APP_BACKEND_URL}/api/webhooks/stripe` for the `checkout.session.completed` event.
+6. Configure the Stripe webhook to point at `{REACT_APP_BACKEND_URL}/api/webhooks/stripe` for the `checkout.session.completed` event.
 
 ---
 

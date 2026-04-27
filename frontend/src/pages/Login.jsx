@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Loader2, ShieldCheck } from "lucide-react";
 import { supabase } from "../lib/supabase";
+import { isOwnerAllowed } from "../lib/ownerAuth";
 import { useLanguage } from "../context/LanguageContext";
 import { restaurantConfig } from "../restaurant.config";
 
@@ -21,12 +22,13 @@ export default function Login() {
     submit:   lang === "fr" ? "Se connecter" : "Sign In",
     notReady: lang === "fr" ? "Supabase n'est pas configuré." : "Supabase is not configured.",
     invalid:  lang === "fr" ? "Email ou mot de passe invalide." : "Invalid email or password.",
+    notOwner: lang === "fr" ? "Ce compte n'est pas autorisé à accéder au tableau de bord." : "This account is not authorized to access the dashboard.",
   };
 
   useEffect(() => {
     if (!supabase) return;
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) navigate("/dashboard");
+      if (session && isOwnerAllowed(session.user?.email)) navigate("/dashboard");
     });
   }, [navigate]);
 
@@ -36,8 +38,13 @@ export default function Login() {
     if (!supabase) { setError(T.notReady); return; }
     setSubmitting(true);
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+      const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
       if (error) throw error;
+      if (!isOwnerAllowed(data.user?.email)) {
+        await supabase.auth.signOut();
+        setError(T.notOwner);
+        return;
+      }
       navigate("/dashboard");
     } catch (err) {
       const raw = err?.message || "";

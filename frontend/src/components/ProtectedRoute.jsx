@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
+import { isOwnerAllowed } from "../lib/ownerAuth";
 
 export default function ProtectedRoute({ children }) {
   const [checking, setChecking] = useState(true);
@@ -9,13 +10,17 @@ export default function ProtectedRoute({ children }) {
 
   useEffect(() => {
     if (!supabase) { navigate("/login"); return; }
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) { setAuthed(true); }
-      else { navigate("/login"); }
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (session && isOwnerAllowed(session.user?.email)) {
+        setAuthed(true);
+      } else {
+        if (session) await supabase.auth.signOut();
+        navigate("/login");
+      }
       setChecking(false);
     });
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
-      if (!session) navigate("/login");
+      if (!session || !isOwnerAllowed(session.user?.email)) navigate("/login");
     });
     return () => subscription?.unsubscribe();
   }, [navigate]);
