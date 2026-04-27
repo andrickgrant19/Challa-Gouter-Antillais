@@ -20,6 +20,9 @@ import Dashboard from "./pages/Dashboard";
 import DashboardOrders from "./pages/DashboardOrders";
 import DashboardMenu from "./pages/DashboardMenu";
 import DashboardCombo from "./pages/DashboardCombo";
+import DashboardFamily from "./pages/DashboardFamily";
+import DashboardDrinks from "./pages/DashboardDrinks";
+import DashboardDesserts from "./pages/DashboardDesserts";
 import DashboardCatering from "./pages/DashboardCatering";
 import DashboardMessages from "./pages/DashboardMessages";
 import DashboardHistory from "./pages/DashboardHistory";
@@ -58,6 +61,9 @@ function App() {
               <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>}>
                 <Route index element={<DashboardOrders />} />
                 <Route path="combo" element={<DashboardCombo />} />
+                <Route path="family" element={<DashboardFamily />} />
+                <Route path="drinks" element={<DashboardDrinks />} />
+                <Route path="desserts" element={<DashboardDesserts />} />
                 <Route path="menu" element={<DashboardMenu />} />
                 <Route path="catering" element={<DashboardCatering />} />
                 <Route path="messages" element={<DashboardMessages />} />
