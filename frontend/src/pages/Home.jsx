@@ -86,10 +86,12 @@ export default function Home() {
           {/* Bento Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
             {T.popularDishes.dishes.map((dish, i) => (
-              <div
+              <Link
                 key={i}
+                to="/menu"
                 data-testid={`dish-card-${i}`}
-                className={`reveal delay-${(i + 1) * 100} group relative rounded-2xl overflow-hidden cursor-pointer ${DISHES[i]?.span || ""}`}
+                aria-label={`${dish.name} — ${lang === "fr" ? "Voir le menu" : "View menu"}`}
+                className={`reveal delay-${(i + 1) * 100} group relative rounded-2xl overflow-hidden cursor-pointer block transition-transform duration-300 hover:scale-[1.02] hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-brand-orange/60 focus:ring-offset-2 ${DISHES[i]?.span || ""}`}
                 style={{ minHeight: i === 0 ? "420px" : "200px" }}
               >
                 <img
@@ -105,7 +107,7 @@ export default function Home() {
                   <h3 className="font-heading text-white text-xl font-bold">{dish.name}</h3>
                   {i === 0 && <p className="text-white/80 text-sm font-body mt-1 leading-relaxed">{dish.description}</p>}
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
 

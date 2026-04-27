@@ -95,7 +95,7 @@ export default function Contact() {
             />
           </div>
           <a
-            href="https://www.google.com/maps/place/Chala+le+gouter+antillais/@45.6499259,-73.5610249,17z"
+            href="https://www.google.com/maps/place/Chala+le+gouter+antillais/@45.6499259,-73.5610249,17z/data=!3m1!4b1!4m6!3m5!1s0x4cc8e101a10f26b5:0xdb7bbf002c0af43f!8m2!3d45.6499222!4d-73.5610249!16s%2Fg%2F11tc1gxpwz"
             target="_blank"
             rel="noopener noreferrer"
             data-testid="google-map-link"
