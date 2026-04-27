@@ -84,18 +84,25 @@ export default function Contact() {
           <div className="grid lg:grid-cols-2 gap-12">
             {/* Map */}
             <div className="space-y-6 reveal-left">
-              <div className="rounded-2xl overflow-hidden shadow-lg h-80">
+              <a
+                href="https://www.google.com/maps/search/?api=1&query=11866+Boulevard+De+La+Rivi%C3%A8re-Des-Prairies+Montr%C3%A9al+QC+H1C+1P9+Canada"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-testid="google-map-link"
+                className="block rounded-2xl overflow-hidden shadow-lg"
+                aria-label={lang === "fr" ? "Ouvrir l'adresse dans Google Maps" : "Open address in Google Maps"}
+              >
                 <iframe
-                  title="Google Maps - Chala Le Gouter Antillais"
+                  title="Chala Le Gouter Antillais - Google Maps"
+                  src={`https://maps.google.com/maps?q=11866+Bd+Rivi%C3%A8re-des-Prairies+Montr%C3%A9al+QC+H1C+1P9&output=embed&hl=${lang === "fr" ? "fr" : "en"}`}
                   width="100%"
-                  height="100%"
-                  frameBorder="0"
-                  src="https://maps.google.com/maps?q=11866+Bd+Rivi%C3%A8re-des-Prairies+Montreal+QC+H1C+1P9&output=embed"
-                  allowFullScreen
+                  className="block w-full h-[280px] md:h-[450px] border-0 pointer-events-none"
+                  allowFullScreen=""
                   loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
                   data-testid="google-map"
                 />
-              </div>
+              </a>
               {/* Full Hours Table */}
               <div className="bg-white rounded-xl border border-brand-border p-6 shadow-sm">
                 <h3 className="font-heading text-lg font-semibold text-brand-black mb-4 flex items-center gap-2">

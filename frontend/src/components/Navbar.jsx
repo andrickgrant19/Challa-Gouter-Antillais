@@ -35,12 +35,19 @@ export default function Navbar() {
 
   const isActive = (path) => location.pathname === path;
 
+  // Pages WITHOUT a dark hero need the navbar in permanent solid-white mode
+  // so text is always readable. Per spec, only these paths keep the transparent →
+  // scroll-to-solid behaviour: /, /catering, /about, /notre-histoire
+  const HERO_PATHS = ["/", "/catering", "/about", "/notre-histoire"];
+  const forceSolid = !HERO_PATHS.includes(location.pathname);
+  const solid = scrolled || mobileOpen || forceSolid;
+
   return (
     <>
       <nav
         data-testid="navbar"
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          scrolled || mobileOpen
+          solid
             ? "bg-white/95 backdrop-blur-xl shadow-sm border-b border-brand-border"
             : "bg-transparent"
         }`}
@@ -49,7 +56,7 @@ export default function Navbar() {
           <div className="flex items-center justify-between h-16 md:h-20">
             {/* Logo */}
             <Link to="/" data-testid="logo" className="flex flex-col leading-none">
-              <span className={`font-heading font-bold text-xl md:text-2xl tracking-tight ${scrolled || mobileOpen ? "text-brand-black" : "text-white"}`}>
+              <span className={`font-heading font-bold text-xl md:text-2xl tracking-tight ${solid ? "text-brand-black" : "text-white"}`}>
                 Chala
               </span>
               <span className="text-brand-gold font-heading text-xs md:text-sm tracking-[0.15em] uppercase font-medium">
@@ -67,7 +74,7 @@ export default function Navbar() {
                   className={`font-body text-sm font-medium transition-colors duration-200 relative group ${
                     isActive(link.to)
                       ? "text-brand-orange"
-                      : scrolled
+                      : solid
                       ? "text-brand-black hover:text-brand-orange"
                       : "text-white/90 hover:text-white"
                   }`}
@@ -85,14 +92,14 @@ export default function Navbar() {
                 <button
                   onClick={() => switchLang("fr")}
                   data-testid="lang-fr"
-                  className={`px-3 py-1.5 text-xs font-body font-semibold transition-all ${lang === "fr" ? "bg-brand-gold text-white" : scrolled ? "text-brand-text hover:bg-brand-gold/10" : "text-white/80 hover:text-white"}`}
+                  className={`px-3 py-1.5 text-xs font-body font-semibold transition-all ${lang === "fr" ? "bg-brand-gold text-white" : solid ? "text-brand-text hover:bg-brand-gold/10" : "text-white/80 hover:text-white"}`}
                 >
                   FR
                 </button>
                 <button
                   onClick={() => switchLang("en")}
                   data-testid="lang-en"
-                  className={`px-3 py-1.5 text-xs font-body font-semibold transition-all ${lang === "en" ? "bg-brand-gold text-white" : scrolled ? "text-brand-text hover:bg-brand-gold/10" : "text-white/80 hover:text-white"}`}
+                  className={`px-3 py-1.5 text-xs font-body font-semibold transition-all ${lang === "en" ? "bg-brand-gold text-white" : solid ? "text-brand-text hover:bg-brand-gold/10" : "text-white/80 hover:text-white"}`}
                 >
                   EN
                 </button>
@@ -100,7 +107,7 @@ export default function Navbar() {
               <button
                 onClick={openDrawer}
                 data-testid="navbar-cart-btn"
-                className={`relative p-2 rounded-md transition-colors ${scrolled || mobileOpen ? "text-brand-black hover:text-brand-orange hover:bg-brand-cream" : "text-white/90 hover:text-white"}`}
+                className={`relative p-2 rounded-md transition-colors ${solid ? "text-brand-black hover:text-brand-orange hover:bg-brand-cream" : "text-white/90 hover:text-white"}`}
                 aria-label="Open cart"
               >
                 <ShoppingBag size={18} />
@@ -124,13 +131,13 @@ export default function Navbar() {
             {/* Mobile: Lang switcher + cart + hamburger */}
             <div className="flex lg:hidden items-center gap-2">
               <div data-testid="lang-switcher-mobile" className="flex items-center border border-brand-gold/40 rounded overflow-hidden">
-                <button onClick={() => switchLang("fr")} data-testid="lang-fr-mobile" className={`px-2.5 py-1 text-xs font-semibold ${lang === "fr" ? "bg-brand-gold text-white" : scrolled ? "text-brand-text" : "text-white/80"}`}>FR</button>
-                <button onClick={() => switchLang("en")} data-testid="lang-en-mobile" className={`px-2.5 py-1 text-xs font-semibold ${lang === "en" ? "bg-brand-gold text-white" : scrolled ? "text-brand-text" : "text-white/80"}`}>EN</button>
+                <button onClick={() => switchLang("fr")} data-testid="lang-fr-mobile" className={`px-2.5 py-1 text-xs font-semibold ${lang === "fr" ? "bg-brand-gold text-white" : solid ? "text-brand-text" : "text-white/80"}`}>FR</button>
+                <button onClick={() => switchLang("en")} data-testid="lang-en-mobile" className={`px-2.5 py-1 text-xs font-semibold ${lang === "en" ? "bg-brand-gold text-white" : solid ? "text-brand-text" : "text-white/80"}`}>EN</button>
               </div>
               <button
                 onClick={openDrawer}
                 data-testid="navbar-cart-btn-mobile"
-                className={`relative p-2 rounded-md ${scrolled || mobileOpen ? "text-brand-black" : "text-white"}`}
+                className={`relative p-2 rounded-md ${solid ? "text-brand-black" : "text-white"}`}
                 aria-label="Open cart"
               >
                 <ShoppingBag size={20} />
@@ -143,7 +150,7 @@ export default function Navbar() {
               <button
                 onClick={() => setMobileOpen(!mobileOpen)}
                 data-testid="mobile-menu-toggle"
-                className={`p-2 rounded-md ${scrolled || mobileOpen ? "text-brand-black" : "text-white"}`}
+                className={`p-2 rounded-md ${solid ? "text-brand-black" : "text-white"}`}
               >
                 {mobileOpen ? <X size={22} /> : <Menu size={22} />}
               </button>
