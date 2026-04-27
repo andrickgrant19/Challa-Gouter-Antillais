@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
-import { LogOut, LayoutDashboard, UtensilsCrossed, History, Mail, PartyPopper } from "lucide-react";
+import { LogOut, LayoutDashboard, UtensilsCrossed, History, Mail, PartyPopper, Sparkles } from "lucide-react";
 import { supabase } from "../lib/supabase";
 import { restaurantConfig } from "../restaurant.config";
 
@@ -21,11 +21,12 @@ export default function Dashboard() {
   };
 
   const tabs = [
-    { to: "/dashboard",          label: "Live Orders", icon: LayoutDashboard, end: true },
-    { to: "/dashboard/menu",     label: "Menu",        icon: UtensilsCrossed },
-    { to: "/dashboard/catering", label: "Catering",    icon: PartyPopper },
-    { to: "/dashboard/messages", label: "Messages",    icon: Mail },
-    { to: "/dashboard/history",  label: "History",     icon: History },
+    { to: "/dashboard",          label: "Live Orders",   icon: LayoutDashboard, end: true },
+    { to: "/dashboard/combo",    label: "Combo Builder", icon: Sparkles },
+    { to: "/dashboard/menu",     label: "Menu",          icon: UtensilsCrossed },
+    { to: "/dashboard/catering", label: "Catering",      icon: PartyPopper },
+    { to: "/dashboard/messages", label: "Messages",      icon: Mail },
+    { to: "/dashboard/history",  label: "History",       icon: History },
   ];
 
   return (
