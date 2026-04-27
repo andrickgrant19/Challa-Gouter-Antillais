@@ -83,7 +83,7 @@ export default function Contact() {
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12">
             {/* Map */}
-            <div className="space-y-6 reveal-left">
+            <div className="space-y-6">
               <div>
                 <div className="rounded-3xl overflow-hidden border border-gray-200 shadow-lg h-[320px]">
                   <iframe
