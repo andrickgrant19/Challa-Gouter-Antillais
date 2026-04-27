@@ -4,12 +4,19 @@ from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 import os
 import logging
+import asyncio
 from pathlib import Path
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone
 import httpx
 import stripe
+
+from emails import (
+    send_customer_order_confirmation,
+    send_owner_order_notification,
+    send_owner_catering_notification,
+)
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -61,6 +68,7 @@ class CheckoutRequest(BaseModel):
     notes: Optional[str] = None
     items: List[CartItem]
     subtotal: float
+    lang: Optional[str] = "fr"  # for customer-facing email language
 
 class CheckoutResponse(BaseModel):
     order_id: str
@@ -193,6 +201,8 @@ async def submit_catering(data: CateringRequest):
     }
     row = await sb_insert("catering_requests", payload)
     logger.info(f"Catering request from {data.name} ({data.email}) — {payload.get('event_type') or 'unspecified'}")
+    # Fire-and-forget owner notification — never block or fail submission
+    asyncio.create_task(send_owner_catering_notification(row))
     return row
 
 @api_router.get("/catering")
@@ -232,6 +242,13 @@ async def create_checkout_session(data: CheckoutRequest):
     order = await sb_insert("orders", order_payload)
     order_id = order["id"]
     logger.info(f"Order created {order_id} subtotal={order_payload['subtotal']}")
+
+    # Fire-and-forget email notifications (never block or fail the order on email errors)
+    customer_lang = (data.lang or "fr").lower()
+    if customer_lang not in ("fr", "en"):
+        customer_lang = "fr"
+    asyncio.create_task(send_customer_order_confirmation(order, lang=customer_lang))
+    asyncio.create_task(send_owner_order_notification(order))
 
     # 2. Optionally create Stripe session
     if not STRIPE_SECRET_KEY:

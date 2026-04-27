@@ -77,6 +77,18 @@ All shared values now live in `/app/frontend/src/restaurant.config.js`.
 
 ---
 
+## Implemented (2026-04-27 — Maps fix + Owner-login link + Resend emails)
+- [x] Contact `/contact`: replaced empty map block with the spec-exact iframe wrapped in `<a>` to Google Maps search. `pointer-events:none` on iframe → clicks bubble to parent anchor → opens Maps in new tab. Responsive (`h-[280px] md:h-[450px]`).
+- [x] Footer: added discreet "Espace propriétaire" / "Owner Login" link below copyright (text-[11px], `text-white/30`, centered) → `/login`. Bilingual via `LanguageContext`.
+- [x] Resend transactional emails wired up via new `/app/backend/emails.py`:
+  - `send_customer_order_confirmation(order, lang)` — bilingual receipt with item table, ETA, brand orange #E07B39
+  - `send_owner_order_notification(order)` — to `OWNER_EMAIL` with full order summary + dashboard CTA
+  - `send_owner_catering_notification(req)` — to `OWNER_EMAIL` with event details + dashboard CTA
+- [x] All 3 emails are FAIL-SOFT: `asyncio.create_task` + try/except inside `_send`. If `RESEND_API_KEY` or `OWNER_EMAIL` is unset, function logs a WARNING and returns without raising — order/catering submissions ALWAYS succeed regardless of email status.
+- [x] `CheckoutRequest` now accepts optional `lang` field (default `"fr"`) — frontend Checkout passes current `LanguageContext.lang`.
+- [x] Backend env: added `RESEND_API_KEY`, `OWNER_EMAIL`, `EMAIL_FROM`, `DASHBOARD_URL` to `.env` and `.env.example`.
+- [x] `requirements.txt` += `resend>=2.0.0`.
+
 ## Implemented (2026-04-27 — Stale-deploy cleanup + Owner allowlist)
 - [x] Deleted orphan `/app/frontend/src/components/ComboBuilder.jsx` (dead code that contained the old "n'est pas encore configurée" string and would short-circuit before any Supabase request when env vars weren't baked in at Vercel build time). Live site was rendering this stale build.
 - [x] Added `REACT_APP_OWNER_EMAILS` (comma-separated) allowlist via new helper `/app/frontend/src/lib/ownerAuth.js` (`isOwnerAllowed`, `hasOwnerAllowlist`).

@@ -85,16 +85,16 @@ export default function Contact() {
             {/* Map */}
             <div className="space-y-6 reveal-left">
               <a
-                href="https://www.google.com/maps/search/?api=1&query=11866+Boulevard+De+La+Rivi%C3%A8re-Des-Prairies+Montr%C3%A9al+QC+H1C+1P9+Canada"
+                href="https://www.google.com/maps/search/?api=1&query=Chala+le+gouter+antillais+11866+Boulevard+De+La+Rivi%C3%A8re-Des-Prairies+Montr%C3%A9al+QC+H1C+1P9"
                 target="_blank"
                 rel="noopener noreferrer"
                 data-testid="google-map-link"
-                className="block rounded-2xl overflow-hidden shadow-lg"
-                aria-label={lang === "fr" ? "Ouvrir l'adresse dans Google Maps" : "Open address in Google Maps"}
+                className="block rounded-2xl overflow-hidden shadow-lg cursor-pointer"
+                aria-label={lang === "fr" ? "Voir sur Google Maps" : "View on Google Maps"}
               >
                 <iframe
-                  title="Chala Le Gouter Antillais - Google Maps"
-                  src={`https://maps.google.com/maps?q=11866+Bd+Rivi%C3%A8re-des-Prairies+Montr%C3%A9al+QC+H1C+1P9&output=embed&hl=${lang === "fr" ? "fr" : "en"}`}
+                  title="Chala Le Goûter Antillais - Localisation"
+                  src={`https://maps.google.com/maps?q=11866+Boulevard+De+La+Rivi%C3%A8re-Des-Prairies+Montr%C3%A9al+QC+H1C+1P9+Canada&output=embed&hl=${lang === "fr" ? "fr" : "en"}`}
                   width="100%"
                   className="block w-full h-[280px] md:h-[450px] border-0 pointer-events-none"
                   allowFullScreen=""

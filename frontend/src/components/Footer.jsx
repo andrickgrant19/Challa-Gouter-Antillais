@@ -93,6 +93,15 @@ export default function Footer() {
           <p>{T.footer.copyright}</p>
           <p>Montreal, Québec, Canada</p>
         </div>
+        <div className="pt-3 text-center">
+          <Link
+            to="/login"
+            data-testid="footer-owner-login"
+            className="text-[11px] font-body text-white/30 hover:text-white/60 transition-colors"
+          >
+            {lang === "fr" ? "Espace propriétaire" : "Owner Login"}
+          </Link>
+        </div>
       </div>
     </footer>
   );

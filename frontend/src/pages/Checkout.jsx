@@ -62,6 +62,7 @@ export default function Checkout() {
           image: i.image || null,
         })),
         subtotal: Number(totalPrice.toFixed(2)),
+        lang,
       };
       const res = await fetch(`${BACKEND_URL}/api/checkout/create-session`, {
         method: "POST",
