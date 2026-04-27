@@ -1,4 +1,5 @@
 import "./App.css";
+import { useEffect } from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { LanguageProvider } from "./context/LanguageContext";
 import { CartProvider } from "./context/CartContext";
@@ -27,6 +28,17 @@ import DashboardCatering from "./pages/DashboardCatering";
 import DashboardMessages from "./pages/DashboardMessages";
 import DashboardHistory from "./pages/DashboardHistory";
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    // Reset scroll to top on every route change so landing on /menu (or any
+    // page) always starts at the top — e.g. clicking a dish card on the
+    // homepage arrives at Step 1 of the combo builder, not mid-page.
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [pathname]);
+  return null;
+}
+
 function ChromeWrapper({ children }) {
   const { pathname } = useLocation();
   // Hide public Navbar/Footer on owner-only routes
@@ -47,6 +59,7 @@ function App() {
     <LanguageProvider>
       <CartProvider>
         <BrowserRouter>
+          <ScrollToTop />
           <ChromeWrapper>
             <Routes>
               <Route path="/" element={<Home />} />
