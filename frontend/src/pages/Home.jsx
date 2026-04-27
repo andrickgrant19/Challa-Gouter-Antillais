@@ -6,11 +6,12 @@ import translations from "../translations";
 import { useScrollRevealAll } from "../hooks/useScrollReveal";
 
 const DISHES = [
-  { img: "https://images.pexels.com/photos/9609848/pexels-photo-9609848.jpeg?auto=compress&cs=tinysrgb&w=800", span: "lg:col-span-2 lg:row-span-2" },
+  { img: "https://customer-assets.emergentagent.com/job_antilles-kitchen/artifacts/ze2tbmy3_Griot%20Haitien.jpg", span: "lg:col-span-2 lg:row-span-2" },
   { img: "https://images.pexels.com/photos/27556985/pexels-photo-27556985.jpeg?auto=compress&cs=tinysrgb&w=800", span: "" },
+  { img: "https://customer-assets.emergentagent.com/job_antilles-kitchen/artifacts/qunjm5q9_rizcolle%CC%81.jpg", span: "" },
   { img: "https://images.pexels.com/photos/27556971/pexels-photo-27556971.jpeg?auto=compress&cs=tinysrgb&w=800", span: "" },
-  { img: "https://images.pexels.com/photos/7625056/pexels-photo-7625056.jpeg?auto=compress&cs=tinysrgb&w=800", span: "" },
-  { img: "https://images.pexels.com/photos/2474661/pexels-photo-2474661.jpeg?auto=compress&cs=tinysrgb&w=800", span: "lg:col-span-2" },
+  { img: "https://customer-assets.emergentagent.com/job_antilles-kitchen/artifacts/tj0rww0l_Patte%CC%81%20hatien.jpg", span: "lg:col-span-2" },
+  { img: "https://customer-assets.emergentagent.com/job_antilles-kitchen/artifacts/x7qea0bk_Combo%20Haitien.webp", span: "" },
 ];
 
 const WHY_ICONS = [ChefHat, Leaf, Heart, Users, Utensils];
@@ -26,7 +27,7 @@ export default function Home() {
       <section
         data-testid="hero-section"
         className="relative min-h-screen flex items-center justify-center overflow-hidden"
-        style={{ backgroundImage: "url(https://images.pexels.com/photos/2116094/pexels-photo-2116094.jpeg?auto=compress&cs=tinysrgb&w=1920)", backgroundSize: "cover", backgroundPosition: "center" }}
+        style={{ backgroundImage: "url(https://customer-assets.emergentagent.com/job_antilles-kitchen/artifacts/8917gknx_Home%20page%20main%20pic.png)", backgroundSize: "cover", backgroundPosition: "center" }}
       >
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/55 to-black/30" />
         <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 w-full pt-20">
