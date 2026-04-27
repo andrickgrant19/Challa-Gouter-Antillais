@@ -78,54 +78,55 @@ export default function Contact() {
         </div>
       </section>
 
-      {/* Map + Form */}
-      <section className="py-16 lg:py-24">
+      {/* Full-width Map */}
+      <section className="pb-12 lg:pb-16">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="rounded-3xl overflow-hidden border border-gray-200 shadow-lg h-[320px] md:h-[500px]">
+            <iframe
+              title="Chala Le Goûter Antillais"
+              src="https://www.google.com/maps?q=11866+Bd+Rivi%C3%A8re-des-Prairies%2C+Montr%C3%A9al%2C+QC+H1C+1P9&output=embed"
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              allowFullScreen
+              data-testid="google-map"
+            />
+          </div>
+          <a
+            href="https://www.google.com/maps/place/Chala+le+gouter+antillais/@45.6499259,-73.5610249,17z"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-testid="google-map-link"
+            className="mt-3 inline-flex items-center gap-2 text-sm text-orange-600 hover:text-orange-700 font-medium"
+          >
+            📍 {lang === "fr" ? "Ouvrir dans Google Maps" : "Open in Google Maps"} →
+          </a>
+        </div>
+      </section>
+
+      {/* Hours + Form */}
+      <section className="pb-16 lg:pb-24">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12">
-            {/* Map */}
-            <div className="space-y-6">
-              <div>
-                <div className="rounded-3xl overflow-hidden border border-gray-200 shadow-lg h-[320px]">
-                  <iframe
-                    title="Chala Le Goûter Antillais"
-                    src="https://www.google.com/maps?q=11866+Bd+Rivi%C3%A8re-des-Prairies%2C+Montr%C3%A9al%2C+QC+H1C+1P9&output=embed"
-                    width="100%"
-                    height="100%"
-                    style={{ border: 0 }}
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                    allowFullScreen
-                    data-testid="google-map"
-                  />
-                </div>
-                <a
-                  href="https://www.google.com/maps/place/Chala+le+gouter+antillais/@45.6499259,-73.5610249,17z"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  data-testid="google-map-link"
-                  className="mt-3 inline-flex items-center gap-2 text-sm text-orange-600 hover:text-orange-700 font-medium"
-                >
-                  📍 {lang === "fr" ? "Ouvrir dans Google Maps" : "Open in Google Maps"} →
-                </a>
-              </div>
-              {/* Full Hours Table */}
-              <div className="bg-white rounded-xl border border-brand-border p-6 shadow-sm">
-                <h3 className="font-heading text-lg font-semibold text-brand-black mb-4 flex items-center gap-2">
-                  <Clock size={16} className="text-brand-gold" /> {T.contact.hoursTitle}
-                </h3>
-                <div className="space-y-2">
-                  {T.contact.hours.map((h, i) => (
-                    <div key={i} className="flex justify-between items-center py-1 border-b border-brand-border last:border-0">
-                      <span className={`font-body text-sm ${i === 4 || i === 5 ? "font-semibold text-brand-orange" : "text-brand-text"}`}>{h.day}</span>
-                      <span className="font-body text-sm font-medium text-brand-black">{h.hours}</span>
-                    </div>
-                  ))}
-                </div>
+            {/* Full Hours Table */}
+            <div className="bg-white rounded-xl border border-brand-border p-6 shadow-sm self-start">
+              <h3 className="font-heading text-lg font-semibold text-brand-black mb-4 flex items-center gap-2">
+                <Clock size={16} className="text-brand-gold" /> {T.contact.hoursTitle}
+              </h3>
+              <div className="space-y-2">
+                {T.contact.hours.map((h, i) => (
+                  <div key={i} className="flex justify-between items-center py-1 border-b border-brand-border last:border-0">
+                    <span className={`font-body text-sm ${i === 4 || i === 5 ? "font-semibold text-brand-orange" : "text-brand-text"}`}>{h.day}</span>
+                    <span className="font-body text-sm font-medium text-brand-black">{h.hours}</span>
+                  </div>
+                ))}
               </div>
             </div>
 
             {/* Contact Form */}
-            <div className="reveal-right">
+            <div>
               <h2 className="font-heading text-3xl font-bold text-brand-black mb-6">{F.title}</h2>
               <form onSubmit={handleSubmit} className="space-y-4" data-testid="contact-form">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
