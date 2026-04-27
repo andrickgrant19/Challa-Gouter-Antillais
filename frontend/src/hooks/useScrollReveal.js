@@ -24,7 +24,7 @@ export function useScrollReveal(threshold = 0.12) {
   return ref;
 }
 
-export function useScrollRevealAll(selector = ".reveal", threshold = 0.12) {
+export function useScrollRevealAll(selector = ".reveal", threshold = 0.12, deps = []) {
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -39,8 +39,11 @@ export function useScrollRevealAll(selector = ".reveal", threshold = 0.12) {
     );
 
     const elements = document.querySelectorAll(selector);
-    elements.forEach((el) => observer.observe(el));
+    elements.forEach((el) => {
+      if (!el.classList.contains("visible")) observer.observe(el);
+    });
 
     return () => observer.disconnect();
-  }, [selector, threshold]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selector, threshold, ...deps]);
 }
