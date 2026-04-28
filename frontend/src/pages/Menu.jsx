@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { ExternalLink, ChefHat, Users, Coffee, IceCreamCone } from "lucide-react";
+import { ExternalLink, ChefHat, Users, Coffee } from "lucide-react";
 import { useLanguage } from "../context/LanguageContext";
 import translations from "../translations";
 import { restaurantConfig } from "../restaurant.config";
-import { IndividualBuilder, FamilyBuilder, DrinksMenu, DessertsMenu } from "../components/MenuSections";
+import { IndividualBuilder, FamilyBuilder, DrinksMenu } from "../components/MenuSections";
 
 export default function Menu() {
   const { lang } = useLanguage();
@@ -14,7 +14,6 @@ export default function Menu() {
     { id: "individual", label_fr: "Plats Individuels", label_en: "Individual Plates", icon: ChefHat },
     { id: "family",     label_fr: "Repas Familiaux",   label_en: "Family Meals",      icon: Users },
     { id: "drinks",     label_fr: "Boissons",          label_en: "Drinks",            icon: Coffee },
-    { id: "desserts",   label_fr: "Desserts",          label_en: "Desserts",          icon: IceCreamCone },
   ];
 
   return (
@@ -68,20 +67,17 @@ export default function Menu() {
             {tab === "individual" && (lang === "fr" ? "Composez votre combo" : "Build Your Combo")}
             {tab === "family"     && (lang === "fr" ? "Repas familial pour 4" : "Family Meal for 4")}
             {tab === "drinks"     && (lang === "fr" ? "Boissons" : "Drinks")}
-            {tab === "desserts"   && (lang === "fr" ? "Desserts" : "Desserts")}
           </h2>
           <p className="font-body text-brand-text">
             {tab === "individual" && (lang === "fr" ? "Personnalisez votre repas en 4 étapes" : "Customize your meal in 4 steps")}
             {tab === "family"     && (lang === "fr" ? "Personnalisez un repas pour 4 personnes" : "Customize a meal that serves 4")}
             {tab === "drinks"     && (lang === "fr" ? "Rafraîchissements pour accompagner votre repas" : "Refreshments to pair with your meal")}
-            {tab === "desserts"   && (lang === "fr" ? "Une touche sucrée pour terminer en beauté" : "A sweet finish to your meal")}
           </p>
         </div>
 
         {tab === "individual" && <IndividualBuilder />}
         {tab === "family"     && <FamilyBuilder />}
         {tab === "drinks"     && <DrinksMenu />}
-        {tab === "desserts"   && <DessertsMenu />}
       </section>
     </main>
   );

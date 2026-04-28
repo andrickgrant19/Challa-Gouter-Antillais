@@ -10,7 +10,6 @@ import FloatingCart from "./components/FloatingCart";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Home from "./pages/Home";
 import Menu from "./pages/Menu";
-import About from "./pages/About";
 import Catering from "./pages/Catering";
 import Reviews from "./pages/Reviews";
 import Contact from "./pages/Contact";
@@ -23,7 +22,6 @@ import DashboardMenu from "./pages/DashboardMenu";
 import DashboardCombo from "./pages/DashboardCombo";
 import DashboardFamily from "./pages/DashboardFamily";
 import DashboardDrinks from "./pages/DashboardDrinks";
-import DashboardDesserts from "./pages/DashboardDesserts";
 import DashboardCatering from "./pages/DashboardCatering";
 import DashboardMessages from "./pages/DashboardMessages";
 import DashboardHistory from "./pages/DashboardHistory";
@@ -64,7 +62,6 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/menu" element={<Menu />} />
-              <Route path="/about" element={<About />} />
               <Route path="/catering" element={<Catering />} />
               <Route path="/reviews" element={<Reviews />} />
               <Route path="/contact" element={<Contact />} />
@@ -76,7 +73,6 @@ function App() {
                 <Route path="combo" element={<DashboardCombo />} />
                 <Route path="family" element={<DashboardFamily />} />
                 <Route path="drinks" element={<DashboardDrinks />} />
-                <Route path="desserts" element={<DashboardDesserts />} />
                 <Route path="menu" element={<DashboardMenu />} />
                 <Route path="catering" element={<DashboardCatering />} />
                 <Route path="messages" element={<DashboardMessages />} />

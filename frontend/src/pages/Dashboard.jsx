@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
-import { LogOut, LayoutDashboard, UtensilsCrossed, History, Mail, PartyPopper, Sparkles, Users, Coffee, IceCreamCone } from "lucide-react";
+import { LogOut, LayoutDashboard, UtensilsCrossed, History, Mail, PartyPopper, Sparkles, Users, Coffee } from "lucide-react";
 import { supabase } from "../lib/supabase";
 import { restaurantConfig } from "../restaurant.config";
 
@@ -25,7 +25,6 @@ export default function Dashboard() {
     { to: "/dashboard/combo",    label: "Plats",         icon: Sparkles },
     { to: "/dashboard/family",   label: "Repas Familiaux", icon: Users },
     { to: "/dashboard/drinks",   label: "Boissons",      icon: Coffee },
-    { to: "/dashboard/desserts", label: "Desserts",      icon: IceCreamCone },
     { to: "/dashboard/menu",     label: "Menu Items",    icon: UtensilsCrossed },
     { to: "/dashboard/catering", label: "Catering",      icon: PartyPopper },
     { to: "/dashboard/messages", label: "Messages",      icon: Mail },

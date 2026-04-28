@@ -154,52 +154,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ABOUT SNIPPET */}
-      <section data-testid="about-section" className="py-24 lg:py-32 bg-brand-cream-secondary">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div className="reveal-left">
-              <span className="text-brand-gold text-xs font-body font-semibold tracking-[0.2em] uppercase block mb-3">{T.about.overline}</span>
-              <h2 className="font-heading text-4xl md:text-5xl font-bold text-brand-black whitespace-pre-line leading-tight mb-2">{T.about.title}</h2>
-              <span className="gold-divider mb-6" />
-              <p className="text-brand-text font-body text-base leading-relaxed mb-4">{T.about.p1}</p>
-              <p className="text-brand-text font-body text-base leading-relaxed mb-8">{T.about.p2}</p>
-              <div className="flex gap-8 mb-8">
-                {T.about.stats.map((s, i) => (
-                  <div key={i} className="text-center">
-                    <div className="font-heading text-3xl font-bold text-brand-orange">{s.value}</div>
-                    <div className="text-brand-text text-xs font-body mt-1">{s.label}</div>
-                  </div>
-                ))}
-              </div>
-              <Link
-                to="/about"
-                data-testid="about-cta"
-                className="inline-flex items-center gap-2 bg-brand-green hover:bg-green-800 text-white font-body font-semibold px-7 py-3.5 rounded-md transition-all duration-200 hover:-translate-y-0.5"
-              >
-                {T.about.cta} <ArrowRight size={16} />
-              </Link>
-            </div>
-            <div className="reveal-right relative">
-              <div className="rounded-2xl overflow-hidden shadow-2xl aspect-[4/5]">
-                <img
-                  src="https://images.unsplash.com/photo-1772479036537-2f24be392ab0?w=800&auto=format&fit=crop"
-                  alt="Restaurant interior"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="absolute -bottom-5 -left-5 bg-white rounded-xl shadow-xl p-4 border border-brand-border">
-                <div className="flex items-center gap-1 mb-1">
-                  {[...Array(5)].map((_, i) => <Star key={i} size={14} className="text-brand-gold" fill="#D4AF37" />)}
-                </div>
-                <p className="font-body text-xs font-semibold text-brand-black">4.9 / 5.0</p>
-                <p className="font-body text-xs text-brand-text">200+ Reviews</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* REVIEWS SNIPPET */}
       <section data-testid="reviews-section" className="py-24 lg:py-32 bg-brand-cream">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">

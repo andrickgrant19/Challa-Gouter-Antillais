@@ -27,7 +27,6 @@ export default function Navbar() {
   const navLinks = [
     { to: "/", label: T.nav.home },
     { to: "/menu", label: T.nav.menu },
-    { to: "/about", label: T.nav.about },
     { to: "/catering", label: T.nav.catering },
     { to: "/reviews", label: T.nav.reviews },
     { to: "/contact", label: T.nav.contact },
@@ -37,8 +36,8 @@ export default function Navbar() {
 
   // Pages WITHOUT a dark hero need the navbar in permanent solid-white mode
   // so text is always readable. Per spec, only these paths keep the transparent →
-  // scroll-to-solid behaviour: /, /catering, /about, /notre-histoire
-  const HERO_PATHS = ["/", "/catering", "/about", "/notre-histoire"];
+  // scroll-to-solid behaviour: /, /catering
+  const HERO_PATHS = ["/", "/catering"];
   const forceSolid = !HERO_PATHS.includes(location.pathname);
   const solid = scrolled || mobileOpen || forceSolid;
 
