@@ -21,7 +21,7 @@ export default function Menu() {
       {/* Hero */}
       <section
         className="relative pt-36 pb-20 flex items-center justify-center overflow-hidden"
-        style={{ backgroundImage: "url(https://images.pexels.com/photos/2116094/pexels-photo-2116094.jpeg?auto=compress&cs=tinysrgb&w=1920)", backgroundSize: "cover", backgroundPosition: "center" }}
+        style={{ backgroundImage: "url(https://customer-assets.emergentagent.com/job_antilles-kitchen/artifacts/qt3r3qxx_Combo%20Haitien.webp)", backgroundSize: "cover", backgroundPosition: "center" }}
       >
         <div className="absolute inset-0 bg-black/70" />
         <div className="relative z-10 text-center px-6">
