@@ -14,6 +14,7 @@ export default function DashboardFamily() {
     { key: "name", label: "Name (FR)", type: "text" },
     { key: "name_en", label: "Name (EN)", type: "text" },
     { key: "price", label: "Price", type: "money" },
+    { key: "image_url", label: "Image URL", type: "text" },
     { key: "display_order", label: "Order", type: "int" },
   ];
   const colsMod = [

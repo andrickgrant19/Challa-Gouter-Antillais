@@ -18,15 +18,21 @@ export default function DashboardCombo() {
     { key: "name", label: "Name (FR)", type: "text" },
     { key: "name_en", label: "Name (EN)", type: "text" },
     { key: "price", label: "Price", type: "money" },
+    { key: "image_url", label: "Image URL", type: "text" },
     { key: "display_order", label: "Order", type: "int" },
   ];
-  const colsMod = [...cols.slice(0,2), { key: "price_modifier", label: "Modifier", type: "money" }, cols[3]];
+  const colsMod = [...cols.slice(0,2), { key: "price_modifier", label: "Modifier", type: "money" }, cols[4]];
   const colsSimple = [
     { key: "name", label: "Name (FR)", type: "text" },
     { key: "name_en", label: "Name (EN)", type: "text" },
     { key: "display_order", label: "Order", type: "int" },
   ];
-  const colsExtra = cols;
+  const colsExtra = [
+    { key: "name", label: "Name (FR)", type: "text" },
+    { key: "name_en", label: "Name (EN)", type: "text" },
+    { key: "price", label: "Price", type: "money" },
+    { key: "display_order", label: "Order", type: "int" },
+  ];
 
   return (
     <div data-testid="dashboard-combo" className="space-y-8">

@@ -199,7 +199,7 @@ export function IndividualBuilder() {
     const parts = [labelOf(protein, lang), labelOf(base, lang)];
     if (side && side.name !== "Aucun" && side.name_en !== "None") parts.push(labelOf(side, lang));
     chosen.forEach((x) => parts.push(`+ ${labelOf(x, lang)}`));
-    addItem({ id: cartId, name: parts.join(" • "), unit_price: +total.toFixed(2), image: PROTEIN_IMG[protein.name] || "" });
+    addItem({ id: cartId, name: parts.join(" • "), unit_price: +total.toFixed(2), image: protein.image_url || PROTEIN_IMG[protein.name] || "" });
     setFeedback("ok");
     setTimeout(() => { setFeedback(null); openDrawer(); }, 600);
   };
@@ -233,7 +233,7 @@ export function IndividualBuilder() {
             {proteins.map((p) => (
               <SelectCard key={p.id} testid={`protein-${p.id}`}
                 selected={proteinId === p.id} onClick={() => setProteinId(p.id)}
-                image={PROTEIN_IMG[p.name]} title={labelOf(p, lang)} meta={fmtMoney(p.price)} />
+                image={p.image_url || PROTEIN_IMG[p.name]} title={labelOf(p, lang)} meta={fmtMoney(p.price)} />
             ))}
           </div>
         </Step>
@@ -356,7 +356,7 @@ export function FamilyBuilder() {
     const cartId = `family:${protein.id}:${base.id}:${sortedExtras.join(",")}`;
     const parts = [`${labelOf(protein, lang)} (4 pers.)`, labelOf(base, lang)];
     chosen.forEach((x) => parts.push(`+ ${labelOf(x, lang)}`));
-    addItem({ id: cartId, name: parts.join(" • "), unit_price: +total.toFixed(2), image: PROTEIN_IMG[protein.name] || "" });
+    addItem({ id: cartId, name: parts.join(" • "), unit_price: +total.toFixed(2), image: protein.image_url || PROTEIN_IMG[protein.name] || "" });
     setFeedback("ok");
     setTimeout(() => { setFeedback(null); openDrawer(); }, 600);
   };
@@ -392,7 +392,7 @@ export function FamilyBuilder() {
             {proteins.map((p) => (
               <SelectCard key={p.id} testid={`fam-protein-${p.id}`}
                 selected={proteinId === p.id} onClick={() => setProteinId(p.id)}
-                image={PROTEIN_IMG[p.name]} title={labelOf(p, lang)} meta={fmtMoney(p.price)} />
+                image={p.image_url || PROTEIN_IMG[p.name]} title={labelOf(p, lang)} meta={fmtMoney(p.price)} />
             ))}
           </div>
         </Step>
@@ -507,13 +507,17 @@ export function DrinksMenu() {
 function DrinkCard({ item, lang, addItem }) {
   const [adding, setAdding] = useState(false);
   const handleAdd = () => {
-    addItem({ id: `drink:${item.id}`, name: labelOf(item, lang), unit_price: +item.price, image: DRINK_IMG });
+    addItem({ id: `drink:${item.id}`, name: labelOf(item, lang), unit_price: +item.price, image: item.image_url || DRINK_IMG });
     setAdding(true); setTimeout(() => setAdding(false), 700);
   };
   return (
     <div data-testid={`drink-${item.id}`} className="bg-white rounded-xl border border-brand-border overflow-hidden hover:shadow-md transition-all flex flex-col animate-fadeIn">
-      <div className="h-32 bg-gradient-to-br from-brand-cream to-brand-gold/20 flex items-center justify-center">
-        <Coffee size={42} className="text-brand-orange/60" />
+      <div className="h-32 bg-gradient-to-br from-brand-cream to-brand-gold/20 flex items-center justify-center overflow-hidden">
+        {item.image_url ? (
+          <img src={item.image_url} alt={labelOf(item, lang)} loading="lazy" className="w-full h-full object-cover" />
+        ) : (
+          <Coffee size={42} className="text-brand-orange/60" />
+        )}
       </div>
       <div className="p-3 flex-1 flex flex-col">
         <h4 className="font-heading text-sm font-semibold text-brand-black flex-1 leading-tight">{labelOf(item, lang)}</h4>

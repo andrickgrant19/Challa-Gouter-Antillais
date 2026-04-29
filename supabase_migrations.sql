@@ -185,6 +185,11 @@ CREATE TABLE IF NOT EXISTS desserts (
   display_order integer NOT NULL DEFAULT 0
 );
 
+-- ─── IMAGE_URL columns (idempotent — added 2026-04-28) ─────────────────────
+ALTER TABLE combo_proteins  ADD COLUMN IF NOT EXISTS image_url text;
+ALTER TABLE family_proteins ADD COLUMN IF NOT EXISTS image_url text;
+ALTER TABLE drinks_items    ADD COLUMN IF NOT EXISTS image_url text;
+
 -- =============================================
 -- REALTIME PUBLICATION + REPLICA IDENTITY
 -- =============================================
