@@ -1,6 +1,7 @@
 import "./App.css";
 import { useEffect } from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import { LanguageProvider } from "./context/LanguageContext";
 import { CartProvider } from "./context/CartContext";
 import Navbar from "./components/Navbar";
@@ -81,6 +82,7 @@ function App() {
             </Routes>
           </ChromeWrapper>
         </BrowserRouter>
+        <SpeedInsights />
       </CartProvider>
     </LanguageProvider>
   );
